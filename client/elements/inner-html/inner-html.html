@@ -1,0 +1,35 @@
+<dom-module id="inner-html">
+	<style is="custom-style" include="app-styles">
+        :root{
+            background:transparent;
+        }
+	</style>
+	
+	<template>
+		<div id="inner-html-contents"></div>
+	</template>
+	
+	<script>
+		Polymer({
+			is: 'inner-html',
+			properties: {
+				/**
+			 * Plain HTML that is directly dumped into the DOM
+			 */
+				html: {
+					type: String,
+					value: '',
+					observer: '_refreshHtml'
+				}
+			},
+			ready: function() {
+				Polymer.dom(this.$$("#inner-html-contents")).innerHTML = this.html;
+				this.updateStyles();
+			},
+			_refreshHtml: function() {
+				Polymer.dom(this.$$("#inner-html-contents")).innerHTML = this.html;
+				this.updateStyles();
+			}
+		});
+	</script>
+</dom-module>

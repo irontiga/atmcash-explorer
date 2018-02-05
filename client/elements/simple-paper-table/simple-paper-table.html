@@ -1,0 +1,104 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-styles/typography.html">
+
+<!--
+`simple-paper-table`
+simple, paper, and it&#39;s a table
+
+@demo demo/index.html 
+-->
+
+<dom-module id="simple-paper-table">
+	<template>
+		<style>
+			:host ::content table{
+				width:100%;
+			}
+			
+			:host ::content table thead, :host ::content table tbody {
+				display: block;
+			}
+			:host ::content table tbody {
+				overflow-y: auto;    /* Trigger vertical scroll    */
+				overflow-x: hidden;  /* Hide the horizontal scroll */
+			}
+			:host ::content table tr td:first-child, :host ::content table tr th:first-child{
+				padding-left:12px;
+			}
+			
+			:host ::content table tr td:last-child, :host ::content table tr th:last-child{
+				padding-right:12px;
+			}
+			:host ::content table tbody tr:hover{
+				background:#eee;
+			}
+			:host ::content table th, :host ::content table td{
+				font-family: 'Roboto', 'Noto', sans-serif;
+				text-align:left;
+			}
+			:host ::content table th{
+				font-family: 'Roboto', 'Noto', sans-serif;
+				font-size:12px;
+				font-weight:bold;
+				color:rgba(0,0,0,0.54);
+				height:36px;
+				line-height:36px;
+				
+			}
+			:host ::content table td{
+				font-weight:normal;
+				font-size:13px;
+				color:rgba(0,0,0,0.87);
+				height:32px;
+				line-height:32px;
+			}
+		</style>
+				
+		<content is="table" id="tableContainer"></content>
+		
+
+		<!--<table id="table">
+			<content is="thead" id="table-head"></content>
+			<content is="tbody" id="table-body"></content>
+		</table>-->
+	</template>
+
+	<script>
+		Polymer({
+
+			is: 'simple-paper-table',
+
+			properties: {
+				prop1: {
+					type: String,
+					value: 'simple-paper-table',
+				},
+			},
+			
+			ready: function(){
+				var tableContainer = this.$$("#tableContainer");
+				//var children = this.tableContainer.queryEffectiveChildren("tbody");
+				console.log(tableContainer);
+				//console.log(children);
+				
+				// tbody = document.getElementById("table");
+				//console.log(tbody);
+			}
+
+		});
+		
+		/*var $table = $('table'),
+			$bodyCells = $table.find('tbody tr:first').children(),
+			colWidth;
+
+		// Get the tbody columns width array 
+		colWidth = $bodyCells.map(function() {
+			return $(this).width();
+		}).get();
+
+		// Set the width of thead columns
+		$table.find('thead tr').children().each(function(i, v) {
+			$(v).width(colWidth[i]);
+		});   */
+	</script>
+</dom-module>

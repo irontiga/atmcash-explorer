@@ -1,0 +1,35 @@
+<dom-module id="burst-api">
+	<template>
+		
+		<iron-ajax
+				   auto
+				   url="http://127.0.0.1:8125/burst"
+				   params="{{params}}"
+				   handle-as="json"
+				   last-response="{{response}}"
+				   on-response="_handleResponse"
+				   debounce-duration="300"></iron-ajax>
+	</template>
+	<script>
+		Polymer({
+			is: "burst-api",
+
+			properties: {
+				id: {
+					type: String,
+					value: ""
+				},
+				response: {
+					type: Object,
+					notify: true
+				},
+				params: {
+					type: Object
+				}
+			},
+			_handleResponse: function(response){
+				//console.log(response);
+			}
+		});
+	</script>
+</dom-module>

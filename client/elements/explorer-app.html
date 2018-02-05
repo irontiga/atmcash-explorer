@@ -1,0 +1,212 @@
+<link rel="import" href="/client/elements/elements.html">
+<link rel="import" href="/client/styles/app-styles.html">
+
+<!-- Analytics -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-45270147-8', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+<dom-module id="explorer-app">
+	<style is="custom-style" include="app-styles">
+		paper-drawer-panel {
+			--paper-drawer-panel-left-drawer-container: {
+
+			};
+		}
+		:root {
+			/* Label and underline color when the input is not focused */
+			--paper-input-container-color: rgba(255,255,255,0.7);
+
+			/* Label and underline color when the input is focused */
+			--paper-input-container-focus-color: rgba(255, 255, 255, 1);
+			
+			--paper-input-container-input-color: #fff;
+
+		}
+		.main-search{
+			margin-top:-16px;
+			
+		}
+		.title{
+			color:#fff;
+		}
+		.thin-asset-name{
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 50px;
+			display: block;
+		}
+        
+        .search-container{
+            background: rgba(255,255,255,0.5);
+            padding:0;
+            height:40px;
+            border-radius:2px;
+            padding-left:12px;
+            width:100%;
+        }
+        .search-container paper-icon-button{
+            top:-18px;
+        }
+        #searchInput{
+            top:-18px;
+            color: #fff;
+            width:100%;
+        }
+        #searchInput:focus{
+            border-bottom: 0;
+        }
+        
+        ::-webkit-input-placeholder { /* Chrome */
+            color: #fff;
+        }
+        :-ms-input-placeholder { /* IE 10+ */
+            color: #fff;
+        }
+        ::-moz-placeholder { /* Firefox 19+ */
+            color: #fff;
+            opacity: 1;
+        }
+        :-moz-placeholder { /* Firefox 4 - 18 */
+            color: #fff;
+            opacity: 1;
+        }
+	</style>
+	<template>
+		<!--<asset-db></asset-db>-->
+		<app-location route="{{route}}" path="{{path}}"></app-location>
+		
+        <app-route route="{{route}}" pattern="/:view/:id" data="{{routeData}}" active="{{routeActive}}" tail="routeTail"></app-route>
+        
+        
+        
+        
+        
+		<!-- drawer-width="160px"-->
+		<paper-drawer-panel>
+			<!-- Drawer -->
+			<paper-header-panel fixed drawer>
+				
+				<paper-toolbar>
+					<span class="title">EXPLORE</span>
+				</paper-toolbar>
+				
+				<div class="layout vertical" style="height: 100%">
+					
+					<paper-menu>
+						<!--<paper-item>
+							<paper-ripple></paper-ripple>
+							<a style="display:block" href="/asset/">Assets</a>
+						</paper-item>
+
+						<paper-item>
+							<paper-ripple></paper-ripple>
+							<a style="display:block" href="/store/">Store</a>
+						</paper-item>-->
+                        
+                        <paper-item>
+                            <paper-ripple></paper-ripple>
+                            <a href="/richlist/1">Richlist</a>
+                        </paper-item>
+					</paper-menu>
+
+					<!--<div class="flex"></div>-->
+					
+					<all-assets page-size=10 route="{{route}}">
+						<paper-icon-button icon="fullscreen" onclick="allAssets.open()"></paper-icon-button>
+					</all-assets>
+
+					
+				</div>
+
+			</paper-header-panel>
+
+			<!-- Main page area -->
+			<paper-header-panel main>
+				
+				
+				
+				
+				<!-- All assets dialogue -->
+				
+				
+				<paper-dialog id="allAssets" with-backdrop>
+                    <paper-dialog-scrollable style="margin:0; padding:0;">
+                        <all-assets full=true route="{{route}}"></all-assets>
+                    </paper-dialog-scrollable>
+					
+					<div class="buttons">
+						<paper-button dialog-confirm autofocus>
+							<paper-ripple></paper-ripple>
+							Close
+						</paper-button>
+					</div>
+				</paper-dialog>
+				
+				
+				
+				
+				
+				
+				<paper-toolbar>
+					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+					<span class="title"><!--Burst explorer--></span>
+					<!--<a href="/richlist/1">Richlist &nbsp;</a>-->
+                    <paper-input-container class="search-container">
+                        <paper-icon-button prefix icon="search" on-tap="_search"></paper-icon-button>
+                        <input is="iron-input" id="searchInput" on-keydown="_searchKeypress" placeholder="Search">
+                    </paper-input-container>
+					<!--<paper-input class="main-search" label="Search" id="searchInput" on-keydown="_searchKeypress">
+						<paper-icon-button suffix icon="search" on-tap="_search"></paper-icon-button>
+						<input is="iron-input">
+					</paper-input>-->
+					<paper-icon-button icon="refresh"></paper-icon-button>
+				</paper-toolbar>
+
+				<div>
+                    <template is="dom-if" if="{{routeActive}}">
+                        <neon-lazy-pages selected="[[routeData.view]]" attr-for-selected="name" loading="{{lazyLoading}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                        <!--<iron-pages >-->
+                            <paper-progress indeterminate class="blue"  active="{{lazyLoading}}" style="width:100%;"></paper-progress>
+                            <template is="iron-lazy-page" name="search">
+                                <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
+                            </template>
+                            <template is="iron-lazy-page" name="asset">
+                                <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
+                            </template>
+                            <template is="iron-lazy-page" name="account">
+                                <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
+                            </template>
+                            <template is="iron-lazy-page" name="transaction">
+                                <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
+                            </template>
+                            <template is="iron-lazy-page" name="block">
+                                <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
+                            </template>
+                            <template is="iron-lazy-page" name="store">
+                                <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
+                            </template>
+                            <template is="iron-lazy-page" name="richlist">
+                                <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
+                            </template>
+                        <!--</iron-pages>-->
+                        </neon-lazy-pages>
+                    </template>
+                    
+					
+				</div>
+
+			</paper-header-panel>
+		</paper-drawer-panel>
+		<!--<div>{{greeting}}</div>-->
+	</template>
+	<script src="app.js"></script>
+</dom-module>

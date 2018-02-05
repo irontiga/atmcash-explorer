@@ -1,0 +1,121 @@
+<link rel="import" href="/client/elements/block-view/block-queries.html">
+<dom-module id="block-view">
+    <template>
+        <style include="app-styles">
+            h3{
+                font-family: Roboto Mono;
+                font-weight:300;
+            }
+            .transactions-div{
+                max-height: 200px;
+                overflow:auto;
+            }
+        </style>
+        <block-queries id="{{id}}" block="{{block}}" dburl="{{dburl}}"></block-queries>
+
+        <iron-grid class="gapped">
+            <div class="xs12 s12 m12">
+                <paper-card>
+                    <div class="card-contentttt">
+                        <h3>Block <b>{{block.height}}</b></h3>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>ID</th>
+                                    <td>{{block._id}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Time</th>
+                                    <td>{{_time(block.timestamp)}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Generator (block winner)</th>
+                                    <td><a href="/account/{{block.generator}}">{{block.generatorRS}}</a></td>
+                                </tr>
+                                <tr>
+                                    <th>Reward</th>
+                                    <td>{{block.blockReward}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Base target</th>
+                                    <td>{{block.baseTarget}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Scoop number</th>
+                                    <td>{{block.scoopNum}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nonce</th>
+                                    <td>{{block.nonce}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </paper-card>
+            </div>
+            
+            <div class="xs12 s12 m12">
+                <paper-card>
+                    <!--<paper-datatable data="{{block.transactions}}">
+<paper-datatable-column header="Time" property="timestamp">
+<template>
+<span>{{_time(value)}}</span>
+</template>
+</paper-datatable-column>
+<paper-datatable-column header="ID" property="_id">
+<template>
+<a href="/transaction/{{value}}">{{value}}</a>
+</template>
+</paper-datatable-column>
+<paper-datatable-column header="Sender" property="sender">
+<template>
+<span><a href="/account/{{value}}">{{value}}</a></span>
+</template>
+</paper-datatable-column>
+<paper-datatable-column header="Time" property="sender">
+<template>
+<span>{{value}}</span>
+</template>
+</paper-datatable-column>
+</paper-datatable>-->
+
+                    <div class="card-contentttt">
+                        <h3>Transactions ({{block.numberOfTransactions}})</h3>
+                        <div class="transactions-divvvv">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>ID</th>
+                                        <th>From</th>
+                                        <th>Amount</th>
+                                        <th>To</th>
+                                        <th>Type</th>
+                                        <th>Block</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <template is="dom-repeat" items="{{block.transactions}}">
+                                        <tr>
+                                            <td>{{_time(item.timestamp)}}</td>
+                                            <td><a href="/transaction/{{item._id}}">{{item._id}}</a></td>
+                                            <td><a href="/account/{{item.sender}}">{{item.senderRS}}</a></td>
+                                            <td class$="{{_txColour(item.sender)}}"><b>B</b> {{_formatNQT(item.amountNQT)}} <small>{{_NQTDecimals(item.amountNQT)}}</small></td>
+                                            <td><a href="/account/{{item.recipient}}">{{item.recipientRS}}</a></td>
+                                            <td>{{_txType(item.type, item.subtype)}}</td>
+                                            <td>{{item.ecBlockHeight}}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </paper-card>
+            </div>
+        </iron-grid>
+
+    </template>
+    <script src="/client/elements/tx-types.js"></script>
+    <script src="/client/elements/block-view/block-view.js"></script>
+</dom-module>

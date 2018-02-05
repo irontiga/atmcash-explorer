@@ -1,0 +1,76 @@
+<dom-module id="account-queries">
+	<template>
+		<template is="dom-if" if="{{pageready}}">
+			<!--<app-pouchdb-document 
+								  db-name="{{newdburl}}" 
+								  doc-id="{{id}}" 
+								  data="{{account}}" 
+								  log="true" 
+								  sequentialTransactions="true"
+								  >
+			</app-pouchdb-document>-->
+			<burst-api
+					   params="{{_getAccountParams(id)}}"
+					   response="{{account}}"
+					   ></burst-api>
+			
+			
+			
+			<burst-api
+					   params="{{_getAliasesParams(id)}}"
+					   response="{{aliases}}"
+					   ></burst-api>
+		</template>
+	</template>
+
+	<script>
+		Polymer({
+			is: "account-queries",
+
+			properties: {
+				newdburl: {
+					type: String,
+					computed: "_getdburl(dburl)",
+					value: ""
+				},
+				pageready: {
+					type: Boolean,
+					value: false
+				},
+				dburl: {
+					type: String,
+					value: ""
+				},
+				account:{
+					type: Object,
+					notify: true
+				},
+				aliases:{
+					type: Object,
+					notify:true
+				}
+			},
+			
+			_getdburl: function(url){
+				return url + "accounts";
+			},
+			_getAccountParams: function(id){
+				return {
+					requestType: "getAccount",
+					account: id
+				};
+
+			},
+			_getAliasesParams: function(id){
+				return {
+					requestType: "getAliases",
+					account: id
+				};
+
+			},
+			ready: function(){
+				this.pageready = true;
+			}
+		});
+	</script>
+</dom-module>

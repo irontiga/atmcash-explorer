@@ -1,0 +1,70 @@
+<dom-module id="asset-trades">
+	<style>
+		
+	</style>
+	<template>
+		<!-- All asset trades -->
+		<app-pouchdb-query db-name="{{newdburl}}"
+						   selector='{{allTradesSelector}}'
+						   sort='[{"timestamp": "desc"}]'
+						   data="{{allTrades}}"
+						   log="true">
+		</app-pouchdb-query>
+		
+		Helllooooooo
+		<table>
+			<tbody>
+				<template is="dom-repeat" items="{{allTrades}}">
+					<tr>
+						<td>
+							{{item._id}}
+						</td>
+						<td>
+							{{item.priceNQT}}
+						</td>
+						<td>
+							{{item.quantityQNT}}
+						</td>
+					</tr>
+				</template>
+			</tbody>
+		</table>
+	</template>
+	<script>
+		Polymer({
+			is: "asset-trades",
+
+			properties: {
+				id: String,
+				newdburl: {
+					type: String,
+					computed: "_getdburl(dburl)",
+					value: ""
+				},
+				pageready: {
+					type: Boolean,
+					value: false
+				},
+				dburl: {
+					type: String,
+					value: ""
+				},
+				allTradesSelector:{
+					type: String,
+					computed: "_getTradesSelector(id)"
+				},
+			},
+			
+			_getdburl: function(url){
+				return url + "assets";
+			},
+			
+			_getTradesSelector: function(id){
+				return "asset $eq " + id + ", timestamp $gt null";
+			},
+			ready: function(){
+				this.pageready = true;
+			}
+		});
+	</script>
+</dom-module>

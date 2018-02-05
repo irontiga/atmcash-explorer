@@ -1,0 +1,164 @@
+<dom-module id="asset-graph">
+	<style>
+		google-chart{
+			width:100%;
+			height:400px;
+		}
+	</style>
+	<template>
+		<highcharts-stock id="chart" x-zoom data="{{_getSeries(asset)}}" type="candlestick" highchartttt-options="{{highchartOptions}}" chartttt-options="{{plotOptions}}" title=""></highcharts-stock>
+		<!--  -->
+		<!-- data="{{asset.candlestickChart}}"  type="candlestick" title="" -->
+		<!--<highcharts-chart data="{{asset.volumeChart}}" type="candlestick" title="" chart-options="{{volumePlotOptions}}"></highcharts-chart>-->
+		<!--<google-chart
+					  type="candlestick"
+					  options='{"legend": "none"}'
+					  data='{{asset.chart}}'>
+		</google-chart>-->
+		<!--{{asset.chart}}-->
+	</template>
+	<script>
+		Polymer({
+			is: "asset-graph",
+
+			properties: {
+				id: {
+					type: String,
+					observer: "_idObserver"
+				},
+				/*asset:{
+					type: Object,
+					//value: {},
+					observer: "_assetObserver"
+				},*/
+				plotOptions: {
+					type: Object,
+					value: {
+						candlestick: {
+							color: "#f44336",
+							lineColor: "#f44336",
+							upColor: "#4caf50",
+							upLineColor: "#4caf50"
+						},
+						column:{
+							color:"#444"
+						}
+					}
+				},
+				highchartOptions:{
+					type: Object,
+					value: {
+						title:{
+							style: {
+								fontSize: "20px",
+								fontFamily: '"Roboto Mono", monospace',
+								textAnchor: "left"
+							}
+						},
+						chart:{
+							style: {
+								fontFamily: '"Roboto", sans-serif',
+							},
+							height: 500,
+							borderColor: "#666"
+						},
+						/*rangeSelector: {
+							selected: 1,
+							inputEnabled: false,
+							buttonTheme: {
+								visibility: 'hidden'
+							},
+							labelStyle: {
+								visibility: 'hidden'
+							}
+						},*/
+
+						rangeSelector: {
+							selected: 6
+						},
+						navigator: {
+							enabled: true,
+							height: 30,
+							margin: 10,
+							maskFill :"rgba(0,0,0,0.3)",
+							outLineWidth: 0,
+							baseSeries: 0
+						},
+						yAxis: [{
+							labels: {
+								align: 'right',
+								x: -3
+							},
+							title: {
+								text: "Candle"
+							},
+							height: '69%',
+							lineWidth: 2,
+							min: 0,
+							gridLineWidth: 0
+						}, {
+							labels: {
+								align: 'right',
+								x: -3
+							},
+							title: {
+								text: 'Volume'
+							},
+							top: '70%',
+							height: '30%',
+							offset: 0,
+							lineWidth: 2,
+							gridLineWidth: 0
+						}],
+
+						tooltip: {
+							split: true
+						}
+					}
+				},
+				series: {
+					type: Array,
+					computed: "_getSeries(asset)"
+				}
+			},
+			
+			// --------------------------------------------------------- //
+			// ######################################################### //
+			// --------------------------------------------------------- //
+			
+			ready: function(){
+				//console.log(this.asset.volumeChart);
+				
+			},
+			
+			_getSeries: function(asset){
+				if(!("name" in this.asset)){
+					return [];
+				}
+				return [{
+					type: 'candlestick',
+					name: this.asset.name,
+					data: this.asset.candlestickChart/*,
+					yAxis: 0*/
+				}, {
+					type: 'column',
+					name: 'Volume',
+					data: this.asset.volumeChart,
+					yAxis: 1
+				}];
+			},
+			
+			_idObserver: function(){
+				console.log(this.$.chart);
+				//this.$.chart.zoomOut();
+			}
+		});
+	</script>
+</dom-module>
+
+<!--[["Day", "low", "start", "end", "high"],
+["Mon", 20, 28, 38, 45],
+["Tue", 31, 38, 55, 66],
+["Wed", 50, 55, 77, 80],
+["Thu", 77, 77, 66, 50],
+["Fri", 68, 66, 22, 15]]-->

@@ -1,0 +1,114 @@
+<link rel="import" href="/client/elements/transaction-view/transaction-queries.html">
+<dom-module id="transaction-view">
+	<template>
+		<style include="app-styles">
+			h3{
+				font-family: Roboto Mono;
+				font-weight:300;
+				text-transform: uppercase;
+			}
+			.scrolly-cell{
+				max-width: 50%;
+				max-height: 40px;
+				margin: 0;
+				padding: 0;
+				overflow: auto;
+				word-wrap:break-word;
+			}
+			/*table{
+				table-layout: fixed;
+			}
+			table td{
+				word-wrap:break-word;
+				max-height: 48px;
+				overflow-y: auto;
+			}*/
+		</style>
+		<transaction-queries id="{{id}}" transaction="{{transaction}}" dburl="{{dburl}}"></transaction-queries>
+        
+		<iron-grid class="gapped">
+            <div class="xs12 s12 m12">
+                <paper-card>
+                    <h3 class="my-card-title">Transaction <a href="">{{id}}</a></h3>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Sender</th>
+                                <td><a href="/account/{{transaction.sender}}">{{transaction.senderRS}}</a></td>
+                            </tr>
+                            <tr>
+                                <th>Amount</th>
+                                <td>{{_formatNQT(transaction.amountNQT)}} Burst</td>
+                            </tr>
+                            <tr>
+                                <th>Recipient</th>
+                                <td><a href="/account/{{transaction.recipient}}">{{transaction.recipientRS}}</a></td>
+                            </tr>
+                            <tr>
+                                <th>Time</th>
+                                <td>{{_time(transaction.timestamp)}}</td>
+                            </tr>
+                            <tr>
+                                <th>Fee</th>
+                                <td>{{_formatNQT(transaction.feeNQT)}} Burst</td>
+                            </tr>
+                            <tr>
+                                <th>Block height</th>
+                                <td>{{transaction.height}} (<a href="/block/{{transaction.height}}">{{transaction.block}}</a>)</td>
+                            </tr>
+                            <tr>
+                                <th>Type text</th>
+                                <td>{{_txType(transaction.type, transaction.subtype)}}</td>
+                            </tr>
+                            <tr>
+                                <th>Type</th>
+                                <td>{{transaction.type}}</td>
+                            </tr>
+                            <tr>
+                                <th>Subtype</th>
+                                <td>{{transaction.subtype}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <template is="dom-if" if="{{transaction.attachment}}">
+                        <h3>Attachments</h3>
+                        <table>
+                            <tbody>
+                                <template is="dom-repeat" items="{{_toArray(transaction.attachment)}}">
+                                    <tr>
+                                        <th>{{item.name}}</th>
+                                        <template is="dom-if" if="{{_isObj(item.value)}}">
+                                            <td>
+                                                <table>
+                                                    <tbody>
+                                                        <template is="dom-repeat" items="{{_toArray(item.value)}}">
+                                                            <tr>
+                                                                <th>{{item.name}}</th>
+                                                                <td>
+                                                                    <div class="scrolly-cell">
+                                                                        {{item.value}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </template>
+                                        <template is="dom-if" if="{{!_isObj(item.value)}}">
+                                            <td>{{item.value}}</td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                </paper-card>
+            </div>
+        </iron-grid>
+
+	</template>
+	<script src="/client/elements/tx-types.js"></script>
+	<script src="/client/elements/transaction-view/transaction-view.js"></script>
+</dom-module>

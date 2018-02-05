@@ -1,0 +1,109 @@
+<dom-module id="richlist-view">
+	<template>
+		<style include="app-styles">
+			paper-datatable-card{
+				margin:16px;
+			}
+		</style>
+
+		<paper-datatable-card id="richlistCard" header="Richlist" data-source="{{richlistSource}}" progress page-size="10" page-size-option="[10,20,50]" page="{{page}}">
+			<paper-datatable>
+				<paper-datatable-column header="Name" property="name">
+					<template>
+						<span><a href="/account/{{value.id}}" on-tap="_tableClick">{{value.name}}</a></span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Balance" property="balanceNQT" sortable sorted sort-direction="desc">
+					<template>
+						<span>{{_format(value)}}</span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Mined balance" property="forgedBalanceNQT" sortable sort-direction="asc">
+					<template>
+						<span>{{_format(value)}}</span>
+					</template>
+				</paper-datatable-column>
+			</paper-datatable>
+		</paper-datatable-card>
+	</template>
+
+	<script>
+		var accountsDB = new PouchDB("http://127.0.0.1:5984/accounts");
+		
+		accountsDB.info().then(function(response){
+			console.log(response);
+		});
+		Polymer({
+			is: "richlist-view",
+
+			properties: {
+				page: {
+					type: Number,
+					value: 1,
+					notify:true,
+					observer: "_pageObserver"
+				},
+				richlistSource: {
+					type: Object,
+					computed: "_richlistSource(page)"
+				},
+				route:{
+					notify:true
+				}
+			},
+			_richlistSource: function(page){
+				if(page < 1){
+					this.page = 1;
+				}
+				return {
+					get: function(sort, page, pageSize){
+						//console.log(sort);
+						return accountsDB.find({
+							selector: {
+								balanceNQT: {$gt: null},
+								forgedBalanceNQT: {$gt: null}
+							},
+							fields:["name",  "balanceNQT", "_id", "forgedBalanceNQT", "accountRS"],
+							sort: [{
+								[sort.property]: sort.direction
+							}],
+							skip: pageSize*(page-1),
+							limit: pageSize
+						})
+							.then(function(response){
+							var docs = response.docs.map(function(account){
+								if(!("name" in account) || account.name == ""){
+									account.name= {
+										name : account.accountRS
+									}
+								}
+								else{
+									account.name = {
+										name: account.name
+									}
+								}
+								account.name.id = account._id;
+								account.balanceNQT = account.balanceNQT / 100000000;
+								account.forgedBalanceNQT = account.forgedBalanceNQT / 100000000;
+								return account;
+							});
+							return docs;
+						})
+					}.bind(this),
+					set: function(){},
+					length: undefined
+				}
+			},
+			_tableClick: function(e){
+				this.set('route.path', e.srcElement.href);
+			},
+			_pageObserver: function(){
+				
+			},
+			_format: function(num){
+				return parseFloat(num.toFixed(0)).toLocaleString();
+			}
+
+		})
+	</script>
+</dom-module>

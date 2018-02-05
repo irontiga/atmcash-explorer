@@ -1,0 +1,35 @@
+{
+	"name": "burst-asset-explorer",
+	"version": "1.0.0",
+	"description": "Burst assets",
+	"main": "server/server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node server/server.js",
+		"start-dev": "node server/server.js dev",
+		"crons": "node server/blockCrons/run.js",
+		"first-crons": "node server/blockCrons/run.js firstrun",
+		"vulcanize-windows": "vulcanize -p %cd% --inline-scripts --inline-css client/index.html > client/build.html",
+		"vulcanize-linux": "",
+		
+		"update-trades": "node server/individualUpdates/updateTrades.js",
+		"update-accounts": "node server/individualUpdates/updateAccounts.js",
+		"update-assets": "node server/individualUpdates/updateAssets.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/burst-team/asset-explorer.git"
+	},
+	"author": "irontiga",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/burst-team/asset-explorer/issues"
+	},
+	"homepage": "https://github.com/burst-team/asset-explorer#readme",
+	"dependencies": {
+		"hapi": "^15.1.1",
+		"inert": "^4.0.2",
+		"pouchdb": "^6.0.6",
+		"pouchdb-find": "^0.10.3"
+	}
+}

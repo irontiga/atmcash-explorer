@@ -1,0 +1,63 @@
+<link rel="import" href="/client/elements/store-view/store-queries.html">
+
+<!-- Styles -->
+<link rel="import" href="/client/styles/app-styles.html">
+
+<dom-module id="store-view">
+	<template>
+		<style include="app-styles">
+			h3{
+				font-family: Roboto Mono;
+				font-weight:300;
+			}
+			.transactions-div{
+				max-height: 200px;
+				overflow:auto;
+			}
+		</style>
+		<!--<store-queries id="{{id}}" block="{{block}}" dburl="{{dburl}}"></store-queries>-->
+
+		<div class="layout vertical">
+
+			<div class="layout horizontal">
+				<div class="flex-12">
+					<paper-card>
+						<div class="card-content">
+							<h3>Store</h3>
+						</div>
+					</paper-card>
+				</div>
+			</div>
+			
+			<div class="layout horizontal">
+				<div class="flex-6">
+					<paper-card>
+						<div class="card-content">
+							<h3>Title</h3>
+							<p>Description Etiam pharetra sit amet ligula sed iaculis. Integer a placerat nibh. Morbi volutpat imperdiet est eget maximus. Etiam vehicula leo mi, vitae bibendum est blandit ac. Nulla commodo, ante ut iaculis laoreet, velit velit sollicitudin arcu, at venenatis tellus risus convallis ipsum. Nullam feugiat tincidunt erat, quis volutpat eros laoreet vel. Nulla sollicitudin nulla sed quam vulputate, id ornare velit interdum. Cras aliquet nulla tempus eros dignissim, et lobortis mi lacinia. Etiam ullamcorper nulla in quam aliquet, ut convallis nulla tempor. Curabitur eu massa sodales, faucibus sem non, lacinia ante. Curabitur id mollis libero, sed tempus tellus. Sed feugiat ex ac ante pharetra, posuere semper risus auctor. Sed sit amet orci venenatis, mattis eros id, congue lorem. Vivamus lobortis varius est at ultricies.</p>
+						</div>
+						
+						<div class="card-actions">
+							<paper-button raised>Some action</paper-button>
+						</div>
+					</paper-card>
+				</div>
+				
+				<div class="flex-6">
+					<paper-card>
+						<div class="card-content">
+							<h3>Title</h3>
+							<p>Description Etiam pharetra sit amet ligula sed iaculis. Integer a placerat nibh. Morbi volutpat imperdiet est eget maximus. Etiam vehicula leo mi, vitae bibendum est blandit ac. Nulla commodo, ante ut iaculis laoreet, velit velit sollicitudin arcu, at venenatis tellus risus convallis ipsum. Nullam feugiat tincidunt erat, quis volutpat eros laoreet vel. Nulla sollicitudin nulla sed quam vulputate, id ornare velit interdum. Cras aliquet nulla tempus eros dignissim, et lobortis mi lacinia. Etiam ullamcorper nulla in quam aliquet, ut convallis nulla tempor. Curabitur eu massa sodales, faucibus sem non, lacinia ante. Curabitur id mollis libero, sed tempus tellus. Sed feugiat ex ac ante pharetra, posuere semper risus auctor. Sed sit amet orci venenatis, mattis eros id, congue lorem. Vivamus lobortis varius est at ultricies.</p>
+						</div>
+						
+						<div class="card-actions">
+							<paper-button raised>Some action</paper-button>
+						</div>
+					</paper-card>
+				</div>
+			</div>
+		</div>
+
+	</template>
+	<script src="/client/elements/store-view/store-view.js"></script>
+</dom-module>

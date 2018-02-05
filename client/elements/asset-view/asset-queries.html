@@ -1,0 +1,124 @@
+<dom-module id="asset-queries">
+	<template>		
+		<!-- Trades -->
+		<!--<app-pouchdb-query db-name="http://127.0.0.1:5984/asset-trades"
+						   selector="{{_getTradesSelector(id)}}"
+						   fields='["_id","sellerRS", "buyerRS", "tradeType", "timestamp", "quantityQNT", "priceNQT"]'
+						   sort='[{"timestamp": "desc"}]'
+						   limit="20"
+						   data="{{trades}}">
+		</app-pouchdb-query>-->
+		
+		<!-- Ask orders -->
+		<!--<app-pouchdb-query db-name="http://127.0.0.1:5984/asset-ask-orders"
+						   selector="{{_getAskOrdersSelector(id)}}"
+						   fields='["_id", "accountRS", "quantityQNT", "priceNQT"]'
+						   sort='["priceNQT"]'
+						   limit="20" 
+						   data="{{askorders}}">
+</app-pouchdb-query>-->
+		
+		<!-- Bid orders -->
+		<!--<app-pouchdb-query db-name="http://127.0.0.1:5984/asset-bid-orders"
+						   selector="{{_getBidOrdersSelector(id)}}"
+						   fields='["_id", "accountRS", "quantityQNT", "priceNQT"]'
+						   sort='[{"priceNQT": "desc"}]'
+						   limit="20"  
+						   data="{{bidorders}}">
+</app-pouchdb-query>-->
+		
+		<!-- Wait for page to be ready otherwise the url isn't created right -->
+		<template is="dom-if" if="{{pageready}}">
+			<!-- Selected Asset -->
+			<app-pouchdb-document
+								  db-name="assets"
+								  doc-id="{{id}}"
+								  data="{{asset}}"
+								  log="true"
+								  sequentialTransactions="true">
+			</app-pouchdb-document>
+			
+			<!-- All assets -->
+			<app-pouchdb-query id="allAssetsQuery"
+							   db-name="assets"
+							   selector='{{allAssetsSelector}}'
+							   limit="300"
+							   fields='["monthlyVolume", "dailyVolume", "name", "_id"]',
+							   sort='[{"monthlyVolume": "desc"}]'
+							   data="{{allassets}}"
+							   log="true">
+			</app-pouchdb-query>
+		</template>
+
+	</template>
+	
+	<script>
+		Polymer({
+			is: "asset-queries",
+			
+			properties: {
+				id: String,
+				newdburl: {
+					type: String,
+					computed: "_getdburl(dburl)",
+					value: ""
+				},
+				pageready: {
+					type: Boolean,
+					value: false
+				},
+				dburl: {
+					type: String,
+					value: ""
+				},
+				trades: {
+					type: Array,
+					notify: true
+				},
+				allAssetsSelector:{
+					type: String,
+					value:  "_id $gt null, monthlyVolume $gt null"
+				},
+				asset:{
+					type: Object,
+					notify: true
+				},
+				askorders: {
+					type: Array,
+					notify: true
+				},
+				bidorders: {
+					type: Array,
+					notify: true
+				},
+				allassets: {
+					type: Array,
+					notify: true
+				}
+			},
+
+			_getTradesSelector: function(id){
+				//console.log("asset $eq '" + id + "', timestamp $exists true");
+				return "asset $eq '" + id + "', timestamp $gt null";
+			},
+			_getAskOrdersSelector: function(id){
+				return "asset $eq '" + id + "', priceNQT $gt null";
+			},
+			_getBidOrdersSelector: function(id){
+				return "asset $eq '" + id + "', priceNQT $gt null";
+			},
+			
+			_getdburl: function(url){
+				return url + "assets";
+			},
+			ready: function(){
+				this.pageready = true;
+				// Refresh the all assets list every now n then
+				console.log("Updating all assets list");
+				setInterval(function(){
+					this.allAssetsQuery.refresh();
+				}, 200000);
+			}
+		});
+	</script>
+</dom-module>

@@ -1,0 +1,69 @@
+<dom-module id="orderbook-chart">
+	<template>
+		<div id="orderchart"></div>
+	</template>
+	<script>
+		var app = Polymer({
+			is: "orderbook-chart",
+
+			properties: {
+				orders: {
+					type: String,
+					observer: "_ordersObserver"
+				}
+			},
+			
+			_ordersObserver: function(orders){
+				if(!("name" in this.orders)){
+					return;
+				}
+				var asks = this.orders.asks.map(function(ask){
+					return {
+						x: ask.price,
+						y: ask.quantitySum,
+						sum: ask.sum.toFixed(0)
+					}
+				}.bind(this));
+				
+				var bids = this.orders.bids.map(function(bid){
+					return {
+						x: bid.price,
+						y: bid.quantitySum,
+						sum: bid.sum.toFixed(0)
+					}
+				}.bind(this));
+				
+				Highcharts.chart('orderchart', {
+					chart: {
+						type: 'area'
+					},
+					tooltip: {
+						pointFormat: "{point.y:,.0f} " + this.orders.name + " @ {point.x} Burst<br> Sum(Burst): {point.sum}"
+					},
+					legend: {
+						enabled: false
+					},
+					title: {
+						text: ""
+					},
+					yAxis: {
+						gridLineWidth: 0,
+						lineWidth: 0
+					},
+					credits:{
+						enabled: false
+					},
+					series: [{
+						name: 'Bid',
+						data: bids,
+						color: "#43A047"
+					}, {
+						name: 'Ask',
+						data: asks,
+						color: "#d32f2f"
+					}]
+				});
+			}
+		});
+	</script>
+</dom-module>

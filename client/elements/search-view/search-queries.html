@@ -1,0 +1,76 @@
+<dom-module id="search-queries">
+	<template>
+		<template is="dom-if" if="{{pageready}}">
+			<app-pouchdb-query
+							   db-name="{{accountsdburl}}"
+							   selector="{{_getAccountsSelector(search)}}"
+							   fields='["_id","name"]'
+							   limit="20"
+							   data="{{accounts}}"
+							   sequentialTransactions="true"
+							   >
+			</app-pouchdb-query>
+
+			<app-pouchdb-query
+							   db-name="{{assetdburl}}"
+							   selector="{{_getAssetsSelector(search)}}"
+							   fields='["_id","name"]'
+							   limit="20"
+							   data="{{assets}}"
+							   sequentialTransactions="true"
+							   >
+			</app-pouchdb-query>
+		</template>
+	</template>
+	
+	<script>
+		Polymer({
+			is: "search-queries",
+			
+			properties: {
+				accounts:{
+					type: Array,
+					notify: true
+				},
+				assets:{
+					type: Array,
+					notify: true
+				},
+				assetdburl: {
+					type: String,
+					computed: "_getdburl(dburl, 'assets')",
+					value: ""
+				},
+				accountsdburl: {
+					type: String,
+					computed: "_getdburl(dburl, 'accounts')",
+					value: ""
+				},
+				pageready: {
+					type: Boolean,
+					value: false
+				},
+				dburl: {
+					type: String,
+					value: ""
+				}
+			},
+			
+			_getAccountsSelector: function(search){
+				return "name $regex '(?i).*?" + search + ".*?'";
+			},
+			
+			_getAssetsSelector: function(search){
+				return "name $regex '(?i).*?" + search + ".*?'";
+			},
+			
+			_getdburl: function(url, part){
+				return url + part;
+			},
+			ready: function(){
+				this.pageready = true;
+			}
+			
+		});
+	</script>
+</dom-module>

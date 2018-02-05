@@ -1,0 +1,172 @@
+<dom-module id="account-trades">
+	<template>
+		<style include="app-styles">
+		</style>
+		
+		<paper-datatable-card id="accountTradesCard" header="Trades" data-source="{{accountTradesSource}}" progress page-size="5" page-size-options='[5, 10,20,50]'>
+			<div toolbar-main>
+				<paper-icon-button icon="cached" on-tap="_refreshTrades"></paper-icon-button>
+			</div>
+			<paper-datatable id="accountTradesDatatable">
+				<paper-datatable-column header="Time" property="timestamp" sorted>
+					<template>
+						<span>{{_time(value)}}</span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Asset" property="name" sorted>
+					<template>
+						<span><a href="/asset/{{value.asset}}">{{value.name}}</a></span>
+					</template>
+				</paper-datatable-column>
+				
+				<paper-datatable-column header="Type" property="tradeType" sorted>
+					<template>
+						<span class$="{{_tradeColor(value)}}">{{value}}</span>
+					</template>
+				</paper-datatable-column>
+				
+				<paper-datatable-column header="Price" property="price" sorted>
+					<template>
+						<span>{{_format(value)}}</span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Amount" property="amount" sorted>
+					<template>
+						<span>{{_format(value)}}</span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Total" property="total" sorted>
+					<template>
+						<span>{{_format(value)}}</span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Account" property="account" sorted>
+					<template>
+						<span><a href="/account/{{value.account}}">{{value.accountRS}}</a></span>
+					</template>
+				</paper-datatable-column>
+				
+			</paper-datatable>
+		</paper-datatable-card>
+	</template>
+	<script>
+		Polymer({
+			is: "account-trades",
+
+			properties: {
+				id: {
+					type: String,
+					observer: "_idObserver"
+				},
+				accountTradesSource: {
+					type: Object,
+					computed: "_accountTradesSource(id)"
+				},
+				route:{
+					notify: true
+				}
+			},
+
+			_accountTradesSource: function(id){
+				return {
+					get: function(sort, page, pageSize){
+						// Promise
+						return new Promise(function(resolve, reject){
+							var httpRequest = new XMLHttpRequest();
+							// Responose
+							httpRequest.onreadystatechange = function(){
+								if (httpRequest.readyState === XMLHttpRequest.DONE) {
+									if (httpRequest.status === 200){
+
+										var result = JSON.parse(httpRequest.responseText);
+										var trades = result.trades.map(function(trade){
+											trade.name = {
+												name: trade.name,
+												asset: trade.asset
+											}
+											trade.price = trade.priceNQT / 100000000 * Math.pow(10, trade.decimals);
+											trade.amount = trade.quantityQNT / Math.pow(10, trade.decimals);
+											trade.total = trade.priceNQT * trade.quantityQNT / 100000000;
+											
+											if(trade.seller == this.id){
+												trade.account = {
+													account: trade.seller,
+													accountRS: trade.sellerRS
+												}
+											}else{
+												trade.account = {
+													account: trade.buyer,
+													accountRS: trade.buyerRS
+												}
+											}
+											
+											return trade;
+										})
+										
+										resolve(trades);
+									}
+								}
+							}.bind(this);
+
+							var mySize = pageSize;
+							httpRequest.open("GET", "http://127.0.0.1:8125/burst?requestType=getTrades&account="+this.id+"&firstIndex="+mySize*(page-1)+"&lastIndex="+(page*mySize-1));
+							httpRequest.send();
+						}.bind(this));
+					}.bind(this),
+					set: function(id, property, value){
+						console.info("Bleh");
+					}.bind(this)
+				}
+			},
+
+			_refreshTrades: function(){
+				this.$.accountTradesCard.firstPage();
+				this.$.accountTradesCard.retrieveVisibleData();
+			},
+
+			_tableClick: function(e){
+				console.log(e);
+				this.set('route.path', e.srcElement.href);
+			},
+
+			_tradeColor: function(type){
+				if(type == "buy"){
+					return "red-text";
+				}
+				return "green-text";
+			},
+
+			_time: function(timestamp){
+				timestamp += 1407722400
+				var a = new Date(timestamp*1000);
+				var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+				var year = a.getFullYear();
+				var month = months[a.getMonth()];
+				var date = a.getDate();
+				var hour = a.getHours();
+				var min = a.getMinutes();
+				//var sec = a.getSeconds();
+				// Will display time in 10:30:23 format
+				var time = hour + ':' + min + ' ' + date + ' ' + month + ' ' + ' ' + year;
+				return time;
+			},
+			_txType: function(type, subtype){
+				//console.log(type +" "+ subtype)
+				return txTypes[type][subtype];
+			},
+			_format: function(num){
+				return num.toLocaleString();
+			},
+			
+			_idObserver: function(){
+				this.$.accountTradesCard.firstPage();
+			},
+
+			ready: function(){
+				setInterval(function(){
+					this.$.accountTradesCard.retrieveVisibleData();
+				}.bind(this),60 * 1000)
+			}
+		});
+	</script>
+</dom-module>

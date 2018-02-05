@@ -1,0 +1,48 @@
+{
+  "name": "client",
+  "homepage": "https://github.com/burst-team/asset-explorer",
+  "authors": [
+    "irontiga <juser8@gmail.com>"
+  ],
+  "description": "asset-explorer client side code",
+  "main": "main.js",
+  "keywords": [
+    "burst"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-elements": "PolymerElements/iron-elements#^1.0.10",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7",
+    "polymer": "Polymer/polymer#^1.7.0",
+    "google-web-components": "GoogleWebComponents/google-web-components#^1.1.1",
+    "vaadin-grid": "^1.1.2",
+    "polymer-paper-datatable": "jay8t6/paper-datatable#^0.9.16",
+    "iron-grid": "*",
+    "iron-data-table": "^1.0.2",
+    "highcharts-chart": "^1.1.4",
+    "app-elements": "PolymerElements/app-elements#^0.10.1",
+    "paper-datatable": "^0.9.8",
+    "pouchdb-find": "^0.10.3",
+    "highcharts": "^5.0.6",
+    "linkifyjs": "^2.1.4",
+    "start-google-analytics-tracker": "^1.1.1",
+    "iron-lazy-pages": "^1.5.1"
+  },
+  "resolutions": {
+    "firebase": "^3.0",
+    "polymer": "^1.7.0",
+    "paper-styles": "^1.1.4",
+    "paper-icon-button": "^1.1.1",
+    "paper-checkbox": "^1.2.0",
+    "paper-item": "^1.2.1",
+    "highcharts": "^5.0.6"
+  }
+}

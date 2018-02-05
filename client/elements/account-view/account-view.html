@@ -1,0 +1,142 @@
+<link rel="import" href="/client/elements/account-view/account-queries.html">
+<link rel="import" href="/client/elements/account-view/account-transactions.html">
+<link rel="import" href="/client/elements/account-view/account-trades.html">
+<link rel="import" href="/client/elements/account-view/account-asset-balances.html">
+
+<dom-module id="account-view">
+	<template>
+		<style include="app-styles">
+			.top-cards paper-card{
+				height:100%;
+				max-height: 300px;
+			}
+			.name{
+				font-size:20px;
+				line-height:30px;
+			}
+			.balance{
+				font-family: Roboto;
+				font-weight:100;
+				font-size:80px;
+			}
+			.thin{
+				font-weight:100;
+			}
+			h3{
+				font-family: Roboto Mono;
+				font-weight:300;
+			}
+			.transactions-div{
+				max-height: 200px;
+				overflow:auto;
+			}
+			.normal-weight{
+				font-weight: normal;
+			}
+			
+            .account-ids{
+                line-height:44px;
+            }
+			paper-datatable-card#aliasCard{
+				--paper-datatable-top-toolbar{
+					height:0;
+				}
+				
+				--paper-datatable-top-toolbar-color:  green;
+				background-color:pink;
+			}
+		</style>
+		<account-queries id="{{id}}" account="{{account}}" dburl="{{dburl}}" aliases="{{aliases}}"></account-queries>
+
+		<iron-grid class="gapped">
+
+            <div class="xs12 s12 m6">
+                <paper-card>
+                    <div class="card-content">
+                        <span class="account-ids">{{account.accountRS}} / {{account.account}}</span>
+                        <br>
+                        <span class="balance" id="balance"><span class="normal-weight">B</span> {{_formatNQT(account.balanceNQT)}}</span>
+                        <paper-tooltip for="balance">{{_formatNQT(account.balanceNQT)}} {{_NQTDecimals(account.balanceNQT)}}</paper-tooltip>
+                        <br>
+                        <span class="name">{{account.name}}</span>
+                        <hr>
+                        <p>{{account.description}}</p>
+                    </div>
+                </paper-card>
+            </div>
+            <div class="xs12 s12 m6">
+                <paper-card class="table-card">
+                    <paper-tabs selected="{{selectedTab}}">
+                        <paper-tab>Assets</paper-tab>
+                        <paper-tab>Aliases</paper-tab>
+                    </paper-tabs>
+                    <div class="card-contenttttttt">
+                        <!--<h3>&nbsp;<small><b>ASSET BALANCES</b></small></h3>-->
+
+                        <iron-pages selected="{{selectedTab}}">
+                            <!-- ASSET BALANCES -->
+                            <div class="table-div">
+                                <account-asset-balances account="{{account}}"></account-asset-balances>
+                            </div>
+
+
+                            <!-- ALIASES -->
+                            <div class="table-div">
+                                <table class="paper-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Alias</th>
+                                            <th>Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template is="dom-repeat" items="{{aliases.aliases}}">
+                                            <tr>
+                                                <td><a href="/alias/{{item.aliasName}}">{{item.aliasName}}</a></td>
+                                                <td><inner-html html="{{_aliasURI(item.aliasURI)}}"></inner-html></td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--<div>
+<paper-datatable-card id="aliasCard" data-source="{{aliasSource}}" progress page-size="5">
+<paper-datatable id="aliasDatatable">
+<paper-datatable-column header="Alias" property="aliasName" sorted>
+<template>
+<span>{{value}}</span>
+</template>
+</paper-datatable-column>
+<paper-datatable-column header="Data" property="aliasURI">
+<template>
+<span>{{value}}</span>
+</template>
+</paper-datatable-column>
+</paper-datatable>
+</paper-datatable-card>
+</div>-->
+                        </iron-pages>
+
+                    </div>
+                </paper-card>
+            </div>
+			
+            
+            
+			<div class="xs12 s12 m12">
+                <paper-card>
+                    <account-transactions id="{{id}}" route="{{route}}"></account-transactions>
+                </paper-card>
+			</div>
+            
+            <div class="xs12 s12 m12">
+                <paper-card>
+                    <account-trades id="{{id}}" route="{{route}}"></account-trades>
+                </paper-card>
+            </div>
+        </iron-grid>
+
+	</template>
+	<script src="/client/elements/tx-types.js"></script>
+	<script src="/client/elements/account-view/account-view.js"></script>
+</dom-module>

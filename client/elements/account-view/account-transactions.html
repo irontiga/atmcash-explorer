@@ -1,0 +1,191 @@
+<dom-module id="account-transactions">
+	<template>
+		<style include="app-styles">
+		</style>
+		
+		<burst-api
+				   params="{{_getTransactionParams(id)}}"
+				   response="{{transactions}}"
+				   ></burst-api>
+		
+		<paper-datatable-card id="transactionsCard" header="Transactions" data-source="{{txSource}}" progress id-property="transaction" page-size="5" page-size-options='[5, 10,20,50]'>
+			<div toolbar-main>
+				<paper-icon-button icon="cached" on-tap="_refreshTx"></paper-icon-button>
+			</div>
+			<paper-datatable id="transactionDatatable">
+				<paper-datatable-column id="nameColumn" header="Time" property="timestamp" sorted>
+					<template>
+						<span>{{_time(value)}}</span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Transaction" property="transaction">
+					<template>
+						<a href="/transaction/{{value}}" on-tap="_tableClick">{{value}}</a>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="From" property="sender">
+					<template>
+						<a href="/account/{{value.sender}}" on-tap="_tableClick">{{value.senderRS}}</a>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Amount" property="amountNQT">
+					<template>
+						<span class$="{{_txColor(value.sender.sender)}}"><b>B</b> {{_formatNQT(value.amountNQT)}}<small class="thin">{{_NQTDecimals(value.amountNQT)}}</small></span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="To" property="recipient">
+					<template>
+						<a href="/account/{{value.recipient}}" on-tap="_tableClick">{{value.recipientRS}}</a>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Type" property="type">
+					<template>
+						<span>{{_txType(value.type, value.subtype)}}</span>
+					</template>
+				</paper-datatable-column>
+				<paper-datatable-column header="Block height" property="ecBlockHeight">
+					<template>
+						<span>{{_format(value)}}</span>
+					</template>
+				</paper-datatable-column>
+			</paper-datatable>
+		</paper-datatable-card>
+	</template>
+	<script>
+		Polymer({
+			is: "account-transactions",
+			
+			properties: {
+				id: {
+					type: String,
+					observer: "_idObserver"
+				},
+				txSource: {
+					type: Object,
+					computed: "_txSource(id)"
+				},
+				route:{
+					notify: true
+				}
+			},
+			
+			_getTransactionParams: function(id){
+				return {
+					requestType: "getAccountTransactions",
+					lastIndex: 50,
+					account: id
+				};
+			},
+			
+			_txSource: function(id){
+				return {
+					get: function(sort, page, pageSize){
+						// Promise
+						return new Promise(function(resolve, reject){
+							var httpRequest = new XMLHttpRequest();
+							// Responose
+							httpRequest.onreadystatechange = function(){
+								if (httpRequest.readyState === XMLHttpRequest.DONE) {
+									if (httpRequest.status === 200){
+
+										var result = JSON.parse(httpRequest.responseText);
+										var transactions = result.transactions;
+
+										transactions = transactions.map(function(tx){
+											tx.type = {
+												type: tx.type,
+												subtype: tx.subtype
+											};
+											tx.sender = {
+												sender: tx.sender,
+												senderRS: tx.senderRS
+											};
+											tx.recipient = {
+												recipient: tx.recipient,
+												recipientRS: tx.recipientRS
+											};
+											tx.amountNQT = {
+												amountNQT: tx.amountNQT,
+												sender: tx.sender
+											}
+											return tx;
+										}.bind(this));
+
+										resolve(transactions);
+									}
+								}
+							}.bind(this);
+
+							var mySize = pageSize;
+							httpRequest.open("GET", "http://127.0.0.1:8125/burst?requestType=getAccountTransactions&account="+this.id+"&firstIndex="+mySize*(page-1)+"&lastIndex="+(page*mySize-1));
+							httpRequest.send();
+						}.bind(this));
+					}.bind(this),
+					set: function(id, property, value){
+						console.info("Bleh");
+					}.bind(this)
+				}
+			},
+			
+			_refreshTx: function(){
+				this.$.transactionsCard.firstPage();
+				this.$.transactionsCard.retrieveVisibleData();
+			},
+
+			_tableClick: function(e){
+				console.log(e);
+				this.set('route.path', e.srcElement.href);
+			},
+
+			_txColor: function(sender){
+				if(sender == this.id){
+					return "red-text";
+				}
+				return "green-text";
+			},
+			
+			_time: function(timestamp){
+				timestamp += 1407722400
+				var a = new Date(timestamp*1000);
+				var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+				var year = a.getFullYear();
+				var month = months[a.getMonth()];
+				var date = a.getDate();
+				var hour = a.getHours();
+				var min = a.getMinutes();
+				//var sec = a.getSeconds();
+				// Will display time in 10:30:23 format
+				var time = hour + ':' + min + ' ' + date + ' ' + month + ' ' + ' ' + year;
+				return time;
+			},
+			_txType: function(type, subtype){
+				//console.log(type +" "+ subtype)
+				return txTypes[type][subtype];
+			},
+			_format: function(num){
+				return num.toLocaleString();
+			},
+
+			_formatNQT: function(num){
+				num =  parseFloat((num / 100000000).toFixed(0));
+				return num.toLocaleString();
+			},
+			_NQTDecimals: function(num){
+				return "." + (
+					parseFloat((num / 100000000).toFixed(0)) - parseFloat((num / 100000000).toFixed(8))
+				).toString().slice(-8);
+			},
+			
+
+			_idObserver: function(){
+				this.$.transactionsCard.firstPage();
+			},
+
+			ready: function(){
+				setInterval(function(){
+					this.$.transactionsCard.retrieveVisibleData();
+				}.bind(this),60 * 1000)
+			}
+		});
+	</script>
+</dom-module>

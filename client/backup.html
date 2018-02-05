@@ -1,0 +1,95 @@
+<!-- Search -->
+<app-route
+           route="{{route}}"
+           pattern="/search/:search"
+           data="{{searchData}}"
+           active="{{searchPageActive}}">
+</app-route>
+
+<!-- Asset -->
+<app-route
+           route="{{route}}"
+           pattern="/asset/:id"
+           data="{{assetData}}"
+           active="{{assetPageActive}}"
+           tail="{{assetTail}}">
+</app-route>
+
+<!-- Account -->
+<app-route
+           route="{{route}}"
+           pattern="/account/:account"
+           data="{{accountData}}"
+           active="{{accountPageActive}}">
+</app-route>
+
+<!-- Transaction -->
+<app-route
+           route="{{route}}"
+           pattern="/transaction/:transaction"
+           data="{{transactionData}}"
+           active="{{transactionPageActive}}">
+</app-route>
+
+<!-- Block -->
+<app-route
+           route="{{route}}"
+           pattern="/block/:block"
+           data="{{blockData}}"
+           active="{{blockPageActive}}">
+</app-route>
+
+<!-- Store -->
+<app-route
+           route="{{route}}"
+           pattern="/store/:id"
+           data="{{storeData}}"
+           active="{{storePageActive}}"
+           tail="{{storeTail}}">
+</app-route>
+
+<!-- Richlist -->
+<app-route
+           route="{{route}}"
+           pattern="/richlist/:page"
+           data="{{richlistData}}"
+           active="{{richlistPageActive}}"
+           tail="{{richlistTail}}">
+</app-route>
+
+
+
+<!-- Search page -->
+<template is="dom-if" if="{{searchPageActive}}" restamp="true">
+    <search-view search="{{searchData.search}}" dburl="{{dburl}}"></search-view>
+</template>
+
+<!-- Asset page -->
+<template is="dom-if" if="{{assetPageActive}}" restamp="true">
+    <asset-view id="{{assetData.id}}" tail="{{assetTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
+</template>
+
+<!-- Account page -->
+<template is="dom-if" if="{{accountPageActive}}" restamp="true">
+    <account-view id="{{accountData.account}}" dburl="{{dburl}}" route="{{route}}"></account-view>
+</template>
+
+<!-- Transaction page -->
+<template is="dom-if" if="{{transactionPageActive}}" restamp="true">
+    <transaction-view id="{{transactionData.transaction}}" dburl="{{dburl}}"></transaction-view>
+</template>
+
+<!-- Block page -->
+<template is="dom-if" if="{{blockPageActive}}" restamp="true">
+    <block-view id="{{blockData.block}}" dburl="{{dburl}}"></block-view>
+</template>
+
+<!-- Store page -->
+<template is="dom-if" if="{{storePageActive}}" restamp="true">
+    <store-view id="{{storeData.id}}" dburl="{{dburl}}"></store-view>
+</template>
+
+<!-- Richlist page -->
+<template is="dom-if" if="{{richlistPageActive}}" restamp="true">
+    <richlist-view page="{{richlistData.page}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
+</template>

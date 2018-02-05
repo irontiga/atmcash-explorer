@@ -1,0 +1,211 @@
+<dom-module id="asset-accounts">
+	<template>
+		<style include="app-styles">
+			.highcharts-title{
+				font-size:20px;
+				font-family: "Roboto Mono", monospace;
+				text-anchor: left;
+			}
+		</style>
+		<template is="dom-if" if="{{assetAccountsLoaded}}">
+			<burst-api params="{{_getAssetAccountsParams(id)}}" response="{{assetAccounts}}"></burst-api>
+			
+			<paper-datatable-card id="assetAccountsCard" header="Asset accounts" data-source="{{assetAccountSource}}" progress id-property="askOrder" page-size="10" page-size-options='[5, 10, 20]'>
+				
+				<div toolbar-main>
+					<paper-icon-button id="chartButton" icon="donut-small" onclick="assetAccountChartDialog.open()"></paper-icon-button>
+					<paper-tooltip for="chartButton" offset="0">Chart</paper-tooltip>
+				</div>
+				
+				<paper-datatable>
+					<!-- data="{{assetAccounts.accountAssets}}" -->
+					<paper-datatable-column header="Account" property="account">
+						<template>
+							<span><a href="/account/{{value.account}}" on-tap="_tableClick">{{value.accountRS}}</a> {{_isIssuer(value.account, asset.account)}}</span>
+						</template>
+					</paper-datatable-column>
+					<paper-datatable-column header="Quantity" property="quantityQNT">
+						<template>
+							<span>{{_accountQuantity(value, asset.decimals)}}</span>
+						</template>
+					</paper-datatable-column>
+					<paper-datatable-column header="Quantity" property="quantityQNT">
+						<template>
+							<span>{{_accountPercentage(value, asset.quantityQNT)}}%</span>
+						</template>
+					</paper-datatable-column>
+				</paper-datatable>
+			</paper-datatable-card>
+			
+			<paper-dialog id="assetAccountChartDialog" with-backdrop>
+                <paper-dialog-scrollable>
+                    <highcharts-chart type="pie" data="{{assetAccountsChart}}" chart-options="{{assetAccountsChartOptions}}" highchart-options="{{highchartOptions}}" color-by-point label="Quantity" title="{{asset.name}} share holder chart" height-responsive></highcharts-chart>
+                </paper-dialog-scrollable>
+			</paper-dialog>
+
+			
+		</template>
+	</template>
+	
+	<script>
+		Polymer({
+			is: "asset-accounts",
+			
+			properties: {
+				id: {
+					type: String,
+					observer: "_idObserver"
+				},
+				assetAccounts: {
+					type: Object
+				},
+				assetAccountsLoaded: {
+					type: Boolean,
+					value: false
+				},
+				assetAccountSource: {
+					type:Object,
+					computed: "_assetAccountSource(id, assetAccounts)"
+				},
+				route: {
+					notify: true
+				},
+				assetAccountsChart:{
+					type: Array,
+					computed: "_getAssetAccountChartData(id, assetAccounts)"
+				},
+				assetAccountsChartOptions: {
+					type: Object,
+					value: {
+						pie: {
+							allowPointSelect: true,
+							cursor: 'pointer',
+							dataLabels: {
+								enabled: true
+							},
+							showInLegend: false
+						}
+					}
+				},
+				highchartOptions: {
+					type: Object,
+					value:{
+						title:{
+							style: {
+								fontSize: "20px",
+								fontFamily: '"Roboto Mono", monospace',
+								textAnchor: "left"
+							}
+						},
+						chart:{
+							style: {
+								fontFamily: '"Roboto", sans-serif',
+							}
+                            /*,
+							height: 500*/
+						},
+					}
+				}
+			},
+			
+			_idObserver: function(id){
+				if(this.$$("#assetAccountsCard")){
+					this.$$("#assetAccountsCard").firstPage();
+				}
+				if(this.$$("#tradesCard")){
+					this.$$("#tradesCard").firstPage();
+				}
+				var httpRequest = new XMLHttpRequest();
+				// Responose
+				httpRequest.onreadystatechange = function(){
+					if (httpRequest.readyState === XMLHttpRequest.DONE) {
+						if (httpRequest.status === 200){
+                            
+							var result = JSON.parse(httpRequest.responseText);
+                            console.log(result);
+							var assetAccounts = result.accountAssets.slice();
+							this.assetAccounts = assetAccounts;
+							this.assetAccountsLoaded = true;
+						}
+					}
+				}.bind(this);
+                httpRequest.open("GET", "http://cwallet.burstmining.club:8125/burst?requestType=getAssetAccounts&asset="+this.id);
+                //console.log("http://cwallet.burstmining.club:8125/burst?requestType=getAssetAccounts&asset="+this.id);
+				httpRequest.send();
+			},
+			_assetAccountSource: function(id, assetAccounts){
+				if(!("accountAssets" in assetAccounts)){
+					return {};
+				}
+				return {
+					get: function(sort, page, pageSize){
+						// Promise
+						return new Promise(function(resolve, reject){
+							var response = this.assetAccounts.accountAssets.slice((page-1)*pageSize, page*pageSize);
+							if(typeof response[0].account != "string"){
+								console.log(response);
+								return resolve(response);
+							}
+							response = response.map(function(account){
+								account.account = {
+									account: account.account,
+									accountRS: account.accountRS
+								}
+								return account;
+							});
+							return resolve(response);
+						}.bind(this))
+					}.bind(this),
+
+					set: function(id, property, value){
+						console.info("Bleh");
+					},
+
+					length: this.assetAccounts.accountAssets.length
+				}
+			},
+			_getAssetAccountsParams: function(id){
+				return {
+					requestType: "getAssetAccounts",
+					asset: id
+				}
+			},
+			_isIssuer: function(account, assetAccount){
+				if(account == assetAccount){
+					return "(Issuer)";
+				}
+				return "";
+			},
+			_accountQuantity: function(quantity, decimals){
+				return (quantity / Math.pow(10, decimals)).toLocaleString();
+			},
+			_accountPercentage: function(quantity, assetQuantity){
+				return (quantity / assetQuantity * 100).toLocaleString();
+			},
+			_getAssetAccountChartData: function(id, assetAccounts){
+				if(!("accountAssets" in assetAccounts)){
+					return [];
+				}
+				if(!("asset" in this)){
+					return [];
+				}
+
+				var store =  assetAccounts.accountAssets.map(function(account){
+					return {
+						name: account.accountRS,
+						y: account.quantityQNT / Math.pow(10, this.asset.decimals)
+					}
+				}.bind(this));
+
+				return store;
+			},
+			
+			
+			
+			_tableClick: function(e){
+				console.log(e);
+				this.set('route.path', e.srcElement.href);
+			}
+		})
+	</script>
+</dom-module>

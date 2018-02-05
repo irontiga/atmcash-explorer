@@ -1,0 +1,101 @@
+<dom-module id="account-asset-balances">
+	<template>
+
+		<style include="app-styles">
+			table{
+				background: transparent;
+			}
+		</style>
+			
+		<table class="paper-table">
+			<thead>
+				<tr>
+					<th>Asset</th>
+					<th>Balance</th>
+					<th>Highest bid</th>
+					<th>Value</th>
+					<th>Month volume</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template is="dom-repeat" items="{{assetBalances}}">
+					<tr>
+						<!--<app-pouchdb-document
+id="asset-{{index}}"
+db-name="assets" 
+doc-id="{{item.asset}}" 
+log="true",
+data="{{item.assetInfo}}"
+></app-pouchdb-document>-->
+						<td><a href="/asset/{{item.asset}}">{{item.name}}</a></td>
+						<td>{{_assetBalance(item.balanceQNT, item.decimals, item.quantityQNT)}}</td>
+						<td>{{_assetPrice(item.highestBid.priceNQT, item.decimals)}}</td>
+						<td>{{_assetValue(item.balanceQNT, item.highestBid.priceNQT)}}</td>
+						<td>{{_format(item.monthlyVolume)}}</td>
+					</tr>
+				</template>
+			</tbody>
+		</table>
+		
+	</template>
+	
+	<script>
+		var assets = new PouchDB("assets");
+		
+		var app = Polymer({
+			is: "account-asset-balances",
+			
+			properties: {
+				account: {
+					type: Object,
+					value: {},
+					observer: "_accountObserver"
+				},
+				assetBalances: {
+					type: Array,
+					value: []
+				}
+			},
+			_accountObserver: function(){
+				if(!("assetBalances" in this.account)){
+					this.assetBalances = [];
+					return [];
+				}
+				var storeBalances = this.account.assetBalances.slice();
+				var cnt = 0;
+				storeBalances.forEach(function(balance, i , balances){
+					assets.get(balance.asset)
+					.then(function(response){
+						
+						storeBalances[i].name = response.name;
+						storeBalances[i].monthlyVolume = response.monthlyVolume;
+						storeBalances[i].quantityQNT = response.quantityQNT;
+						storeBalances[i].decimals = response.decimals;
+						storeBalances[i].highestBid = response.highestBid;
+						storeBalances[i].lowestAsk = response.lowestAsk;
+						
+						cnt++;
+						if(cnt == storeBalances.length){
+							this.assetBalances = storeBalances;
+						}
+					}.bind(this));
+				}.bind(this))
+				
+			},
+			_format: function(num){
+				return num.toLocaleString();
+			},
+			_assetBalance: function(balance, decimals, quantity){
+				return (balance / Math.pow(10, decimals)).toLocaleString() + " (" + (balance / quantity * 100).toFixed(2) + "%)";
+			},
+			_assetPrice: function(price, decimals){
+				price = price / 100000000 * Math.pow(10, decimals);
+				return price.toLocaleString();
+			},
+			_assetValue: function(balance, price){
+				var num = parseFloat((balance * price / 100000000).toFixed(0));
+				return num.toLocaleString();
+			}
+		})
+	</script>
+</dom-module>

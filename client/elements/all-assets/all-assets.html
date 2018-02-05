@@ -1,0 +1,161 @@
+<dom-module id="all-assets">
+	<style is="custom-style" include="app-styles">
+		.thin-name{
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			/*max-width: 50px;*/
+			display: block;
+		}
+        :host{
+            margin:0;
+        }
+	</style>
+	<template>
+		<template is="dom-if" if="{{assetLengthLoaded}}">
+			<paper-datatable-card id="allAssetsCard" header="All Assets" data-source="{{_allAssetsSource()}}" progress id-property="_id" page-size="{{pageSize}}" page-size-options="[]">
+				<div toolbar-main>
+					<!--<paper-icon-button icon="cached" on-tap="_refreshTx"></paper-icon-button>-->
+					<content></content>
+				</div>
+				<paper-datatable id="allAssetsDatatable">
+					<paper-datatable-column header="Name" property="name">
+						<template>
+							<span class$="{{_nameClass(full)}}"><a href="/asset/{{value.id}}" dialog-confirm on-tap="_tableClick">{{value.name}}</a></span>
+						</template>
+					</paper-datatable-column>
+					<paper-datatable-column header="30d vol" property="monthlyVolume" sortable sorted sort-direction="desc" tooltip="30 day trading volume">
+						<template>
+							<span>{{_format(value)}}</span>
+						</template>
+					</paper-datatable-column>
+					<template is="dom-if" if="{{full}}">
+						<paper-datatable-column header="Week volume" property="weeklyVolume" sortable sort-direction="asc">
+							<template>
+								<span>{{_format(value)}}</span>
+							</template>
+						</paper-datatable-column>
+						<paper-datatable-column header="Day volume" property="dailyVolume" sortable sort-direction="asc">
+							<template>
+								<span>{{_format(value)}}</span>
+							</template>
+						</paper-datatable-column>
+						<paper-datatable-column header="Trades" property="numberOfTrades" sortable sort-direction="asc">
+							<template>
+								<span>{{_format(value)}}</span>
+							</template>
+						</paper-datatable-column>
+					</template>
+				</paper-datatable>
+			</paper-datatable-card>
+		</template>
+	</template>
+    
+	<script>
+		
+		var assetsDB  = new PouchDB('assets');
+		
+		var app = Polymer({
+			is: "all-assets",
+
+			properties: {
+				route: {
+					notify: true
+				},
+				full: {
+					type:Boolean,
+					value: false
+				},
+				pageSize:{
+					type: Number,
+					value: 10
+				},
+				
+				assetLength: {
+					type: Number
+				},
+				assetLengthLoaded:{
+					type:Boolean,
+					value: false
+				}
+			},
+			
+			_nameClass: function(full){
+				if(full){
+					return "";
+				}
+				return "thin-name";
+			},
+			
+			_format: function(num){
+				return num.toLocaleString();
+			},
+			
+			_tableClick: function(e){
+				this.set('route.path', e.srcElement.href);
+			},
+
+			_allAssetsSource: function(){
+				
+				/*var assetsDBInfo = {}
+				
+				assetsDB.info(function(info){
+					this.$.allAssetsCard.dataSource.length = info.doc_count;
+				}.bind(this))*/
+
+				var assetSource = {
+					get: function(sort, page, pageSize){
+						//console.log(sort);
+						return this.assetsDB.find({
+							selector: {
+								_id: {$gt: null},
+								monthlyVolume: {$gt: null},
+								weeklyVolume: {$gt: null},
+								dailyVolume: {$gt: null},
+								numberOfTrades : {$gt: null}
+							},
+							fields:["monthlyVolume", "weeklyVolume", "dailyVolume","numberOfTrades", "name", "_id"],
+							sort: [{
+								[sort.property]: sort.direction
+							}],
+							skip: pageSize*(page-1),
+							limit: pageSize
+						})
+							.then(function(response){
+							var docs = response.docs.map(function(asset){
+								asset.name = {
+									name: asset.name,
+									id: asset._id
+								}
+
+								return asset;
+							});
+							return docs;
+						})
+					}.bind(this),
+
+					set: function(){
+						//console.log("uhhh");
+					}.bind(this),
+					
+					length: this.assetLength
+				}
+				
+				return assetSource;
+			},
+
+			ready: function(){
+				this.assetsDB = assetsDB;
+				
+				this.assetsDB.info().then(function(info){
+					this.assetLengthLoaded = true;
+					this.assetLength = info.doc_count - 5;
+				}.bind(this));
+				
+				setInterval(function(){
+					this.$$("#allAssetsCard").retrieveVisibleData();
+				}.bind(this), 60 * 1000)
+			}
+		})
+	</script>
+</dom-module>

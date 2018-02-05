@@ -1,0 +1,47 @@
+<dom-module id="block-queries">
+	<template>
+		<template is="dom-if" if="{{pageready}}">
+			<app-pouchdb-document 
+								  db-name="{{newdburl}}" 
+								  doc-id="{{id}}" 
+								  data="{{block}}" 
+								  log="true"
+								  sequentialTransactions="true"
+								  >
+			</app-pouchdb-document>
+		</template>
+	</template>
+
+	<script>
+		Polymer({
+			is: "block-queries",
+
+			properties: {
+				newdburl: {
+					type: String,
+					computed: "_getdburl(dburl)",
+					value: ""
+				},
+				pageready: {
+					type: Boolean,
+					value: false
+				},
+				dburl: {
+					type: String,
+					value: ""
+				},
+				block:{
+					type: Array,
+					notify: true
+				}
+			},
+
+			_getdburl: function(url){
+				return url + "blocks";
+			},
+			ready: function(){
+				this.pageready = true;
+			}
+		});
+	</script>
+</dom-module>
