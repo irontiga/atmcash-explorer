@@ -6,11 +6,11 @@ const config = require("../config.js");
 const blocksDB = new PouchDB(config.db.url + 'blocks', {
 	auth: config.db.auth
 });
-/* Don't need transactions DB
+///* Don't need transactions DB
 const transactionsDB = new PouchDB(config.db.url + 'transactions', {
 	auth: config.db.auth
 });
-*/
+//*/
 const assetsDB = new PouchDB(config.db.url + 'assets', {
 	auth: config.db.auth
 });
@@ -49,7 +49,8 @@ function index(){
 	})
 	
 	// Trades
-		/*.then(response => {
+    /*
+		.then(response => {
 		return assetTradesDB.createIndex({
 			index: {
 				fields: ['timestamp']
@@ -62,7 +63,8 @@ function index(){
 				fields: ['asset']
 			}
 		})
-	})*/
+	})
+    */
 	
 	// Assets
 	.then(response => {
@@ -105,11 +107,20 @@ function index(){
 		.then(response => {
 		return accountsDB.createIndex({
 			index: {
-				fields: ["name"]
+                fields: ["_id", "name", "accountRS"]
 			}
 		})
 	})
+        /*.then(response => {
+		return accountsDB.createIndex({
+			index: {
+				fields: ["effectiveName"]
+			}
+		})
+	})*/
 		.then(response => {
+        console.log("===============================================================")
+        console.log(response);
 		return accountsDB.createIndex({
 			index: {
 				fields: ["balanceNQT"]
@@ -125,11 +136,11 @@ function index(){
 	})
 	
 	// Transactions
-	/* Don't need transactions DB
+	///* Don't need transactions DB
 		.then(response => {
 		return transactionsDB.createIndex({
 			index: {
-				fields: ["account"]
+				fields: ["sender", "recipient"]
 			}
 		})
 	})
@@ -140,7 +151,7 @@ function index(){
 			}
 		})
 	})
-	*/
+	//*/
 	
 	// Blocks
 		.then(response => {

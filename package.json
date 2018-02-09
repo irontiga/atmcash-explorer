@@ -11,7 +11,6 @@
 		"first-crons": "node server/blockCrons/run.js firstrun",
 		"vulcanize-windows": "vulcanize -p %cd% --inline-scripts --inline-css client/index.html > client/build.html",
 		"vulcanize-linux": "",
-		
 		"update-trades": "node server/individualUpdates/updateTrades.js",
 		"update-accounts": "node server/individualUpdates/updateAccounts.js",
 		"update-assets": "node server/individualUpdates/updateAssets.js"

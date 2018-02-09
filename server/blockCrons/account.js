@@ -49,19 +49,18 @@ function updateAccount(accID, firstrun){
 }
 
 function newAccInfo(accID){
-	//console.log(accID);
+	console.log(accID);
 	return burstApi({
 		requestType: "getAccount",
 		account: accID
 	})
 		.then(accInfo => {
 		//console.log(accInfo.account);
-
 		if("errorCode" in accInfo){
 			console.log(accInfo);
 			return Promise.reject(accInfo);
 		}
-
+        
 		accInfo._id = accInfo.account;
 		delete accInfo.account;
 		// Convert em to numbers, for sorting
@@ -69,6 +68,7 @@ function newAccInfo(accID){
 		accInfo.guaranteedBalanceNQT = accInfo.guaranteedBalanceNQT / 1;
 		accInfo.balanceNQT = accInfo.balanceNQT / 1;
 		accInfo.forgedBalanceNQT = accInfo.forgedBalanceNQT / 1;
+        //accInfo.effectiveName = accInfo.name ? accInfo.name: accInfo.accountRS;
 		return Promise.resolve(accInfo);
 	})
 }

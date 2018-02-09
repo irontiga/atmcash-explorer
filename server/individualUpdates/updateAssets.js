@@ -24,9 +24,9 @@ function syncAssets(assets, i){
 		return assetFunction.assetUpdate(assets[i].asset);
 	})
 	.then(response => {
-		console.log(response);
-		if(i == assets.length){
-			return "Done";
+		//console.log(response);
+		if(i + 1 == assets.length){
+            return "Done. Synced " + (i + 1) + " assets.";
 		}
 		return syncAssets(assets, i+1);
 	})
@@ -39,7 +39,7 @@ function run(){
 	})
 		.then(assets => {
 		assets = assets.assets;
-		console.log(assets);
+		//console.log(assets);
 		return syncAssets(assets, 0);
 	})
 }

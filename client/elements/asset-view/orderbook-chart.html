@@ -20,25 +20,40 @@
 				var asks = this.orders.asks.map(function(ask){
 					return {
 						x: ask.price,
-						y: ask.quantitySum,
-						sum: ask.sum.toFixed(0)
+						y: parseInt(ask.quantitySum.toFixed(0)),
+						sum: ask.quantitySum
 					}
 				}.bind(this));
 				
 				var bids = this.orders.bids.map(function(bid){
 					return {
 						x: bid.price,
-						y: bid.quantitySum,
-						sum: bid.sum.toFixed(0)
+						y: parseInt(bid.quantitySum.toFixed(0)),
+						sum: bid.quantitySum
 					}
 				}.bind(this));
+                
+                const xMax = (bids.length > 0) ? bids[0].x * 2 : 0;
 				
-				Highcharts.chart('orderchart', {
+				Highcharts.chart(this.shadowRoot.querySelector("#orderchart"), {
 					chart: {
-						type: 'area'
+						type: 'area',
+                        style: {
+                            fontFamily: "'Roboto', sans-serif"
+                        },
+                        height:"250px"
 					},
 					tooltip: {
-						pointFormat: "{point.y:,.0f} " + this.orders.name + " @ {point.x} Burst<br> Sum(Burst): {point.sum}"
+                        useHTML: true,
+                        borderRadius: 0,
+                        backgroundColor: "#fff",
+						pointFormat: `
+<table>
+    <tr><td>Price</td><td>{point.x}</td></tr>
+    <tr><td>Sum(` + this.orders.name + `)</td><td>{point.y}</td></tr>
+    <tr><td>Sum(Burst)</td><td>{point.sum}</td></tr>
+</table>`
+                        //"{point.quantity:,.0f} " + this.orders.name + " @ {point.x} Burst<br> Sum(Burst): {point.y}"
 					},
 					legend: {
 						enabled: false
@@ -50,17 +65,39 @@
 						gridLineWidth: 0,
 						lineWidth: 0
 					},
+                    xAxis:{
+                        max: xMax
+                    },
 					credits:{
 						enabled: false
 					},
+                    plotOptions: {
+                        series: {
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
 					series: [{
 						name: 'Bid',
 						data: bids,
-						color: "#43A047"
+						color: "#43A047",
+                        lineWidth:0,
+                        states: {
+                            hover: {
+                                lineWidthPlus: 0
+                            }
+                        }
 					}, {
 						name: 'Ask',
 						data: asks,
-						color: "#d32f2f"
+						color: "#d32f2f",
+                        lineWidth:0,
+                        states: {
+                            hover: {
+                                lineWidthPlus: 0
+                            }
+                        }
 					}]
 				});
 			}

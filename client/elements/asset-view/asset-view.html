@@ -2,13 +2,15 @@
 <link rel="import" href="/client/elements/asset-view/asset-queries.html">
 
 <!-- Graph -->
-<link rel="import" href="/client/elements/asset-view/my-asset-graph.html">
+<link rel="import" href="/client/elements/asset-view/my-asset-chart.html">
 <link rel="import" href="/client/elements/asset-view/orderbook-chart.html">
 
 <!-- Asset trades -->
 <link rel="import" href="/client/elements/asset-view/asset-trades.html">
 <!-- Asset accounts -->
 <link rel="import" href="/client/elements/asset-view/asset-accounts.html">
+<!-- Asset trades grid -->
+<link rel="import" href="/client/elements/asset-view/asset-trades-grid.html">
 
 <dom-module id="asset-view">
 	<template>
@@ -39,15 +41,6 @@
 				float:right;
 				font-weight:normal;
 			}
-			.tradeType{
-				text-transform: capitalize;
-			}
-			.tradeType.green{
-				color:#4caf50;
-			}
-			.tradeType.red{
-				color:#f44336;
-			}
 			.asset-info-table{
 				width: 100%;
 				padding-top:20px;
@@ -55,6 +48,14 @@
 			.asset-info-table td{
 				text-align: right;
 			}
+            .asset-info-table tr{
+                border:0;
+            }
+            
+            vaadin-grid{
+                border:0;
+                max-height:280px;
+            }
             
 		</style>
 
@@ -103,7 +104,7 @@
                                 </h4>
                             </div>
                         </div>
-                        <my-asset-graph asset="{{asset}}" trades="{{trades}}" id="{{id}}" ></my-asset-graph>
+                        <my-asset-chart asset="{{asset}}" trades="{{trades}}" id="{{id}}" ></my-asset-chart>
 
                         <iron-grid class="gapped">
                             <div class="xs12 s12 m8">
@@ -138,113 +139,120 @@
             <div class="xs12 s12 m6">
                 <paper-card class="table-card">
                     <h3 class="my-card-title">Bids</h3>
-                    <div class="table-div">
-                        <table class="paper-table order-table">
-                            <thead>
-                                <tr>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
-                                    <th>Sum(Burst)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template is="dom-repeat" items="{{orders.bids}}">
-                                    <!--  sort="{{_sort('priceNQT', 'desc')}}" -->
-                                    <tr>
-                                        <td>{{_format(item.quantity)}}</td>
-                                        <td>{{_format(item.price)}}</td>
-                                        <td>{{_format(item.total)}}</td>
-                                        <td>{{_format(item.sum)}}</td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
+                    <vaadin-grid id="bidsGrid" aria-label="Bids" items="{{orders.bids}}">
+                        <!-- data-provider="[[assetAccountsProvider]]" size="{{totalAssetAccounts}}"-->
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Quantity
+                            </template>
+                            <template>
+                                {{_format(item.quantity)}}
+                            </template>
+                        </vaadin-grid-column>
+
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Price
+                            </template>
+                            <template>
+                                {{_format(item.price)}}
+                            </template>
+                        </vaadin-grid-column>
+
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Total
+                            </template>
+                            <template>
+                                {{_format(item.total)}}
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Sum
+                            </template>
+                            <template>
+                                {{_format(item.sum)}}
+                            </template>
+                        </vaadin-grid-column>
+                    </vaadin-grid>
                 </paper-card>
             </div>
 
             <div class="xs12 s12 m6">
                 <paper-card class="table-card">
                     <h3 class="my-card-title">Asks</h3>
-                    <div class="table-div">
-                        <table class="paper-table order-table">
-                            <thead>
-                                <tr>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
-                                    <th>Sum(Burst)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template is="dom-repeat" items="{{orders.asks}}">
-                                    <!--  sort="{{_sort('priceNQT', 'asc')}}" -->
-                                    <tr>
-                                        <td>{{_format(item.quantity)}}</td>
-                                        <td>{{_format(item.price)}}</td>
-                                        <td>{{_format(item.total)}}</td>
-                                        <td>{{_format(item.sum)}}</td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
+                    <vaadin-grid id="bidsGrid" aria-label="Bids" items="{{orders.asks}}">
+                        <!-- data-provider="[[assetAccountsProvider]]" size="{{totalAssetAccounts}}"-->
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Quantity
+                            </template>
+                            <template>
+                                {{_format(item.quantity)}}
+                            </template>
+                        </vaadin-grid-column>
+
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Price
+                            </template>
+                            <template>
+                                {{_format(item.price)}}
+                            </template>
+                        </vaadin-grid-column>
+
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Total
+                            </template>
+                            <template>
+                                {{_format(item.total)}}
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column>
+                            <template class="header">
+                                Sum
+                            </template>
+                            <template>
+                                {{_format(item.sum)}}
+                            </template>
+                        </vaadin-grid-column>
+                    </vaadin-grid>
+                    
                 </paper-card>
             </div>
             
             <div class="xs12 s12 m12">
                 <paper-card>
                     <div class="card-content">
-                        <h3>Order book</h3>
+                        <h3 class="my-card-title">Order book</h3>
                         <orderbook-chart orders="{{orders}}" asset="{{asset}}"></orderbook-chart>
                     </div>
                 </paper-card>
             </div>
             
-            <template is="dom-if" if="{{asset.name}}">
+            
 
-               <div class="xs12 s12 m12">
-                   <paper-card>
-                       <paper-datatable-card id="tradesCard" header="Trades" data-source="{{tradeSource}}" progress id-property="askOrder" page-size="10" page-size-options='[5, 10, 20]'>
-                           <paper-datatable id="transactionDatatable">
-                               <paper-datatable-column id="nameColumn" header="Time" property="timestamp" sorted>
-                                   <template>
-                                       <span>{{_time(value)}}</span>
-                                   </template>
-                               </paper-datatable-column>
-                               <paper-datatable-column header="Price" property="price">
-                                   <template>
-                                       <span>{{_format(value)}}</span>
-                                   </template>
-                               </paper-datatable-column>
-                               <paper-datatable-column header="Quantity" property="quantity">
-                                   <template>
-                                       <span>{{_format(value)}}</span>
-                                   </template>
-                               </paper-datatable-column>
-                               <paper-datatable-column header="Total" property="total">
-                                   <template>
-                                       <span>{{_format(value)}}</span>
-                                   </template>
-                               </paper-datatable-column>
-                               <paper-datatable-column header="Trade type" property="tradeType">
-                                   <template>
-                                       <span class$="tradeType {{_tradeColor(value)}}">{{value}}</span>
-                                   </template>
-                               </paper-datatable-column>
-                           </paper-datatable>
-                       </paper-datatable-card>
-                   </paper-card>
-                </div>
+            <div class="xs12 s12 m12 l12 xl12">
+                <template is="dom-if" if="{{asset.name}}">
+                    <paper-card class="table-card">
+                        <h3 class="my-card-title">Trades</h3>
+                        <asset-trades-grid asset="{{asset}}"></asset-trades-grid>
+                    </paper-card>
+                </template>
+            </div>
                 
-                <div class="xs12 s12 m12">
-                    <paper-card>
+            <div class="xs12 s12 m12">
+                <template is="dom-if" if="{{asset.name}}">
+                    <paper-card class="table-card">
+                        <h3 class="my-card-title">Holders</h3>
                         <asset-accounts route="{{route}}" id="{{id}}" asset="{{asset}}"></asset-accounts>
                     </paper-card>
+                </template>
 
-                </div>
-            </template>
+            </div>
+            
             
         </iron-grid>
         

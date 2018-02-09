@@ -1,0 +1,177 @@
+<dom-module id="asset-trades-grid">
+    <template>
+        <style>
+            .tradeType{
+                text-transform: capitalize;
+            }
+            .tradeType.green{
+                color:#4caf50;
+            }
+            .tradeType.red{
+                color:#f44336;
+            }
+            vaadin-grid{
+                border:0;
+                max-height:340px;
+            }
+        </style>
+        <template is="dom-if" if="{{asset.numberOfTrades}}">
+            <vaadin-grid id="tradeGrid" aria-label="Trades" data-provider="{{assetTradesProvider}}" size="{{asset.numberOfTrades}}">
+
+                <vaadin-grid-column>
+                    <template class="header">
+                        Time
+                    </template>
+                    <template>
+                        <span>{{_time(item.timestamp)}}</span>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">
+                        Price
+                    </template>
+                    <template>
+                        <span>{{_format(item.price)}}</span>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">
+                        Total
+                    </template>
+                    <template>
+                        <span>{{_format(item.total)}}</span>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">
+                        Trade type
+                    </template>
+                    <template>
+                        <span class$="tradeType {{_tradeColor(item.tradeType)}}">{{item.tradeType}}</span>
+                    </template>
+                </vaadin-grid-column>
+
+            </vaadin-grid>
+        </template>
+        
+        
+        <!--<paper-datatable-card id="tradesCard" header="Trades" data-source="{{tradeSource}}" progress id-property="askOrder" page-size="10" page-size-options='[5, 10, 20]'>
+            <paper-datatable id="transactionDatatable">
+                <paper-datatable-column id="nameColumn" header="Time" property="timestamp" sorted>
+                    <template>
+                        <span>{{_time(value)}}</span>
+                    </template>
+                </paper-datatable-column>
+                <paper-datatable-column header="Price" property="price">
+                    <template>
+                        <span>{{_format(value)}}</span>
+                    </template>
+                </paper-datatable-column>
+                <paper-datatable-column header="Quantity" property="quantity">
+                    <template>
+                        <span>{{_format(value)}}</span>
+                    </template>
+                </paper-datatable-column>
+                <paper-datatable-column header="Total" property="total">
+                    <template>
+                        <span>{{_format(value)}}</span>
+                    </template>
+                </paper-datatable-column>
+                <paper-datatable-column header="Trade type" property="tradeType">
+                    <template>
+                        <span class$="tradeType {{_tradeColor(value)}}">{{value}}</span>
+                    </template>
+                </paper-datatable-column>
+            </paper-datatable>
+        </paper-datatable-card>-->
+        
+    </template>
+    <script>
+        class AssetTradesGrid extends Polymer.Element{
+            static get is(){ return "asset-trades-grid"; }
+            
+            static get properties(){
+                return {
+                    asset: {
+                        type: Object
+                    }
+                }
+            }
+            
+            _time(timestamp){
+                //console.log(timestamp);
+                timestamp += 1407722400
+                var a = new Date(timestamp*1000);
+                var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                //var year = a.getFullYear();
+                var month = months[a.getMonth()];
+                var date = a.getDate();
+                var hour = a.getHours();
+                var min = a.getMinutes();
+                //var sec = a.getSeconds();
+                // Will display time in 10:30:23 format
+                var time = date + ' ' + month + ' ' + ' ' + hour + ':' + min;
+                return time;
+            }
+            
+            _tradeColor(type){
+                if(type == "buy"){
+                    return "green";
+                }
+                return "red";
+            }
+            
+            _format(num){
+                if(num == undefined){return}
+                num = parseInt(num, 10);
+                return num.toLocaleString();
+            }
+            
+            ready(){
+                super.ready();
+
+                this.assetTradesProvider = (params, callback) => {
+                    var httpRequest = new XMLHttpRequest();
+                    // Responose
+                    httpRequest.onreadystatechange = function(){
+                        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                            if (httpRequest.status === 200){
+
+                                var result = JSON.parse(httpRequest.responseText);
+                                var trades = result.trades;
+
+                                // Checks that the asset has loaded, and if not checks again in 200 milliseconds
+                                var checkAssetLoad = function(trades){
+                                    if("name" in this.asset){
+                                        trades = trades.map(function(trade){
+                                            trade.price = trade.priceNQT / 100000000 * Math.pow(10, this.asset.decimals);
+                                            trade.quantity = trade.quantityQNT / Math.pow(10, this.asset.decimals);
+                                            trade.total = trade.priceNQT * trade.quantityQNT / 100000000;
+
+                                            return trade;
+                                        }.bind(this));
+                                        callback(trades);
+                                    }
+                                    else{
+                                        //console.log("WWWAAAAAAAAIIIIIIIIIIIIIIIIIIITTTTTTTTTTTTTTT");
+                                        setTimeout(function(){
+                                            return checkAssetLoad(trades);
+                                        }, 200)
+                                    }
+                                }.bind(this);
+                                checkAssetLoad(trades);
+                            }
+                        }
+                    }.bind(this);
+                    httpRequest.open("GET", API_URL + "?requestType=getTrades&includeAssetInfo=false&asset="+this.asset._id+"&firstIndex="+params.pageSize*(params.page)+"&lastIndex="+((params.page+1)*params.pageSize));
+                    httpRequest.send();
+                }
+            }
+        }
+        
+        customElements.define('asset-trades-grid', AssetTradesGrid);
+    </script>
+</dom-module>

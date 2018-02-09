@@ -1,218 +1,235 @@
 <dom-module id="app-styles">
 	<template>
-		<style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
-			:root {
-				--primary-text-color: var(--paper-grey-800);
-				--primary-background-color: #fff;
-				--secondary-text-color: #737373;
-				--disabled-text-color: #9b9b9b;
-				--divider-color: #dbdbdb;
-				--primary-color: var(--paper-blue-grey-700);
-				--light-primary-color: var(--paper-blue-grey-100);
-				--dark-primary-color: var(--paper-blue-grey-900);
-				--accent-color: var(--paper-cyan-600);
-				--light-accent-color: var(--paper-cyan-300);
-				--dark-accent-color: var(--paper-cyan-800);
-				/* Components */
-				/* paper-drawer-panel */
-				--drawer-menu-color: #ffffff;
-				--drawer-border-color: 1px solid #ccc;
-				--drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
-				/* paper-menu */
-				--paper-menu-background-color: #fff;
-				--menu-link-color: #333;
-				
-				@apply(--paper-font-common-base);
-				
-				background-color:#f5f5f5;
-				
-				--paper-progress-active-color: var(--accent-color);
-			}
-			
-			p, h1, h2, h3, h4, h5, h6, span, th, tr {
-				color:var(--primary-text-color);
-                background:transparent;
-			}
-			h3{
-				font-size:20px;
-			}
+		<custom-style>
+            <style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+                :host > * {
+                    --primary-text-color: var(--paper-grey-800);
+                    --primary-background-color: #fff;
+                    --secondary-text-color: #737373;
+                    --disabled-text-color: #9b9b9b;
+                    --divider-color: #dbdbdb;
+                    --primary-color: var(--paper-blue-grey-700);
+                    --light-primary-color: var(--paper-blue-grey-100);
+                    --dark-primary-color: var(--paper-blue-grey-900);
+                    --accent-color: var(--paper-cyan-600);
+                    --light-accent-color: var(--paper-cyan-300);
+                    --dark-accent-color: var(--paper-cyan-800);
+                    /* Components */
+                    /* paper-drawer-panel */
+                    --drawer-menu-color: #ffffff;
+                    --drawer-border-color: 1px solid #ccc;
+                    --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
+                    /* paper-menu */
+                    --paper-menu-background-color: #fff;
+                    --menu-link-color: #333;
 
-			paper-menu {
-				--paper-menu-selected-item: {
-					color: var(--primary-color);
-				}
-				--paper-menu-focused-item-after: {
-					background: var(--primary-color);
-				}
-			}
-			paper-menu iron-icon {
-				margin-right: 33px;
-				opacity: 0.54;
-			}
-			paper-menu a {
-				@apply(--layout-horizontal);
-				@apply(--layout-center);
-				text-decoration: none;
-				color: var(--menu-link-color);
-				-webkit-font-smoothing: antialiased;
-				text-rendering: optimizeLegibility;
-				font-size: 14px;
-				font-weight: 400;
-				line-height: 48px;
-				min-height: 48px;
-				padding: 0 16px;
-				text-transform: uppercase;
-				font-family: 'Roboto Mono', monospace;
-				font-weight:bold;
-			}
+                    @apply(--paper-font-common-base);
 
-			/*paper-toolbar .title{
-				font-family: 'Roboto Mono', monospace;
-				text-transform: uppercase;
-			}*/ 
-			
-			paper-toolbar a{
-				color: #fff;
-				line-height: 64px;
-				padding: 0 12px;
-			}
-			paper-toolbar a:hover{
-				
-			}
+                    background-color:#f5f5f5;
 
-			paper-button{
-				background: var(--accent-color);
-				color: #fff;
-				font-size:14px;
-				font-weight: 500;
-				padding: 0 16px;
-				height: 36px;
-				line-height:36px;
-				border-radius: 2px;
-				cursor: pointer;
-				min-width:56px;
-				text-transform: uppercase;
-				text-align: center;
-			}
+                    --paper-progress-active-color: var(--accent-color);
 
-			paper-button.red-button{
-				background: var(--paper-red-500);
-			}
-			paper-button.green-button{
-				background: var(--paper-green-500);
-			}
+                    font-family: "Roboto", sans-serif;
+                }
 
-			paper-fab.primary {
-				--paper-fab-background: var(--primary-color);
-				--paper-fab-keyboard-focus-background: var(--light-primary-color);
-			}
+                *{
+                    font-family: "Roboto", sans-serif;
+                }
 
-			paper-card{
-				--paper-card-header-text{
-					font-family: "Roboto Mono", monospace;
-				}
-			}
-			paper-tabs{
-				--paper-tabs-selection-bar-color: var(--accent-color);
-			}
-			
-			h2{
-				@apply(--paper-font-common-code);
-				font-weight:normal;
-			}
-			table{
-				width:100%;
-				padding:0;
-				margin:0;
-				border-spacing: 0px;
-				border-collapse: collapse;
-			}
-			table tr{
-				padding:0;
-				margin:0;
-				box-sizing: border-box;
-				border-bottom: 1px solid var(--divider-color);
-			}
-			table tbody tr:hover{
-				background-color: #eee;
-			}
-			table td, table th{
-				text-align:left;
-				font-weight: normal;
-				border-bottom: 1px solid #dbdbdb;
-				padding: 0px 28px 0px 28px;
-				height:48px;
-				max-height:48px;
-				margin:0;
-				border:0;
-				box-sizing: border-box;
-			}
-			table th{
-				font-size:12px;
-				color:rgba(0,0,0,0.54);
-			}
-			table td{
-				font-size: 13px;
-			}
-			paper-card{
-				width:100%;
-				margin:0;
-			}
-			paper-card h3{
-				margin: 0 24px;
-				line-height:60px;
-			}
-			paper-card .card-content h3{
-				margin: 0;
-			}
-			.table-card .table-div{
-				height:240px;
-				overflow-y: auto;
-			}
-			.asset-table-div {
-				overflow-y:auto;
-				height:260px;
-			}
-			
-			hr{
-				border: 0;
-				border-top: 1px solidvar(--divider-color);
-			}
-			p{
-				font-size:14px;
-				line-height:20px;
-			}
-			a{
-				color: var(--accent-color);
-				text-decoration: none;
-			}
-			a:hover{
-				color: var(--dark-accent-color);
-				cursor: pointer;
-			}
-			
-			.red-text, a.red-text{
-				color: var(--paper-red-500);
-			}
-			.green-text, a.green-text{
-				color: var(--paper-green-500);
-			}
-            
-            .my-card-title{
-                margin: 0 24px;
-                font-size:24px;
-                line-height:60px;
-                font-weight: normal;
+                p, h1, h2, h3, h4, h5, h6, span, th, tr {
+                    color:var(--primary-text-color);
+                    background:transparent;
+                    font-family: "Roboto Mono", monospace;
+                }
+                h3{
+                    font-size:20px;
+                }
+
+                paper-menu {
+                    --paper-menu-selected-item: {
+                        color: var(--primary-color);
+                    }
+                    --paper-menu-focused-item-after: {
+                        background: var(--primary-color);
+                    }
+                }
+                paper-listbox iron-icon {
+                    margin-right: 33px;
+                    opacity: 0.54;
+                }
+                paper-listbox a {
+                    @apply(--layout-horizontal);
+                    @apply(--layout-center);
+                    text-decoration: none;
+                    color: var(--menu-link-color);
+                    -webkit-font-smoothing: antialiased;
+                    text-rendering: optimizeLegibility;
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 48px;
+                    min-height: 48px;
+                    padding: 0 16px;
+                    text-transform: uppercase;
+                    font-family: 'Roboto Mono', monospace;
+                    font-weight:bold;
+                }
+
+                /*paper-toolbar .title{
                 font-family: 'Roboto Mono', monospace;
-            }
-            .card-content{
-                padding:0 24px 12px 24px;
-            }
-            
-            iron-grid.gapped > *{
-                margin: 0px 0px;
-                padding:6px;
-            }
-		</style>
+                text-transform: uppercase;
+                }*/ 
+
+                paper-toolbar a{
+                    color: #fff;
+                    line-height: 64px;
+                    padding: 0 12px;
+                }
+                paper-toolbar a:hover{
+
+                }
+
+                paper-button{
+                    background: var(--accent-color);
+                    color: #fff;
+                    font-size:14px;
+                    font-weight: 500;
+                    padding: 0 16px;
+                    height: 36px;
+                    line-height:36px;
+                    border-radius: 2px;
+                    cursor: pointer;
+                    min-width:56px;
+                    text-transform: uppercase;
+                    text-align: center;
+                }
+
+                paper-button.red-button{
+                    background: var(--paper-red-500);
+                }
+                paper-button.green-button{
+                    background: var(--paper-green-500);
+                }
+
+                paper-fab.primary {
+                    --paper-fab-background: var(--primary-color);
+                    --paper-fab-keyboard-focus-background: var(--light-primary-color);
+                }
+
+                paper-card{
+                    --paper-card-header-text{
+                        font-family: "Roboto Mono", monospace;
+                    }
+                }
+                paper-tabs{
+                    --paper-tabs-selection-bar-color: var(--accent-color);
+                }
+
+                h2{
+                    @apply(--paper-font-common-code);
+                    font-weight:normal;
+                }
+                table{
+                    width:100%;
+                    padding:0;
+                    margin:0;
+                    border-spacing: 0px;
+                    border-collapse: collapse;
+                }
+                table tr{
+                    padding:0;
+                    margin:0;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid var(--divider-color);
+                }
+                table tbody tr:hover{
+                    background-color: #eee;
+                }
+                table td, table th{
+                    text-align:left;
+                    font-weight: normal;
+                    border-bottom: 1px solid #dbdbdb;
+                    padding: 0px 28px 0px 28px;
+                    height:48px;
+                    max-height:48px;
+                    margin:0;
+                    border:0;
+                    box-sizing: border-box;
+                }
+                table th{
+                    font-size:12px;
+                    color:rgba(0,0,0,0.54);
+                }
+                table td{
+                    font-size: 13px;
+                }
+                paper-card{
+                    width:100%;
+                    margin:0;
+                }
+                paper-card h3{
+                    margin: 0 24px;
+                    line-height:60px;
+                }
+                paper-card .card-content h3{
+                    margin: 0;
+                }
+                .table-card{
+                    height: auto;
+                    max-height: 400px;
+                }
+                .table-card .table-div{
+                    max-height:240px;
+                    overflow-y: auto;
+                }
+                .asset-table-div {
+                    overflow-y:auto;
+                    height:260px;
+                }
+
+                hr{
+                    border: 0;
+                    border-top: 1px solidvar(--divider-color);
+                }
+                p{
+                    font-size:14px;
+                    line-height:20px;
+                }
+                a, a.linkified{
+                    color: var(--accent-color);
+                    text-decoration: none;
+                }
+                a:hover, a.linkified:hover{
+                    color: var(--dark-accent-color);
+                    cursor: pointer;
+                }
+
+                .red-text, a.red-text{
+                    color: var(--paper-red-500);
+                }
+                .green-text, a.green-text{
+                    color: var(--paper-green-500);
+                }
+
+                .my-card-title{
+                    margin: 0 24px;
+                    font-size:20px;
+                    line-height:60px;
+                    font-weight: normal;
+                    font-family: 'Roboto Mono', monospace;
+                }
+                .card-content{
+                    padding:0 24px 12px 24px;
+                }
+
+                iron-grid.gapped > *{
+                    margin: 0px 0px;
+                    padding:6px;
+                }
+                vaadin-grid{
+                    background:transparent;
+                }
+                
+            </style>
+        </custom-style>
 	</template>
 </dom-module>

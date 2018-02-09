@@ -13,7 +13,7 @@ function burstApi(options) {
 	const requestOptions = {
 		host: config.wallet.host,
 		port: config.wallet.port,
-		path: '/burst?' + urlParams,
+		path: "/" + config.wallet.suffix + "?" + urlParams,
 		method: 'POST'
 	};
 	

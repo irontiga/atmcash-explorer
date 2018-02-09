@@ -11,11 +11,11 @@ const blocksDB = new PouchDB(config.db.url + 'blocks', {
 	auth: config.db.auth
 });
 
-/* Don't need transactions DB
+///* Don't need transactions DB
 const transactionsDB = new PouchDB(config.db.url + 'transactions', {
 	auth: config.db.auth
 });
-*/
+//*/
 
 const assetFunctions = require("./asset.js");
 const assetTrades = require("./trades.js");
@@ -60,7 +60,7 @@ function eachBlock(firstrun){
 			delete tx.transaction;
 			
 			//console.log(tx);
-			/* No need for tx.'s in DB
+			///* No need for tx.'s in DB
 			blockPromises.push(
 				transactionsDB.put(tx)
 				.then(response => {
@@ -71,13 +71,13 @@ function eachBlock(firstrun){
 					return Promise.resolve("TX " + tx._id + " wasn't inserted");
 				})
 			);
-			*/
+			//*/
 			
 			if("sender" in tx){
 				// Update the account...
 				if(accountsUpdatedThisBlock.indexOf(tx.sender) == -1){
 					accountsUpdatedThisBlock.push(tx.sender);
-					blockPromises.push(
+                    blockPromises.push(
 						accFunction(tx.sender, firstrun)
 					);
 				}
@@ -184,7 +184,11 @@ function eachBlock(firstrun){
 			delete tx.deadline;
 			delete tx.height;
 			
-			transactionsForBlock.push(tx);
+			transactionsForBlock.push({
+                _id: tx._id,
+                sender: tx.sender,
+                recipient: tx.recipient
+            });
 		})
 		
 		// Store / update account which won the block
@@ -194,9 +198,11 @@ function eachBlock(firstrun){
 		
 		if(accountsUpdatedThisBlock.indexOf(block.generator) == -1){
 			accountsUpdatedThisBlock.push(block.generator);
-			blockPromises.push(
-				accFunction(block.generator, firstrun)
-			);
+            if(block.height!=0){
+                blockPromises.push(
+                    accFunction(block.generator, firstrun)
+                );
+            }
 		}
 		
 		

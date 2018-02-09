@@ -5,8 +5,8 @@ const compact = require("./compact.js");
 const index = require("./index.js");
 
 const firstLoopInt = 0;
-let loopInt = 1000 * 10;
-const compactInt = 1000000;
+let loopInt = 1000 * 1;
+const compactInt = 1000 * 1000;
 
 let firstrun = false;
 

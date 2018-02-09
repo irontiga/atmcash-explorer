@@ -5,43 +5,52 @@
 				font-size:20px;
 				font-family: "Roboto Mono", monospace;
 				text-anchor: left;
-			}
+            }
+            vaadin-grid{
+                border:0;
+                max-height:340px;
+            }
 		</style>
 		<template is="dom-if" if="{{assetAccountsLoaded}}">
 			<burst-api params="{{_getAssetAccountsParams(id)}}" response="{{assetAccounts}}"></burst-api>
+            
+            <vaadin-grid id="assetAccountsGrid" aria-label="Asset accounts" items="{{assetAccounts.accountAssets}}">
+                <!-- data-provider="[[assetAccountsProvider]]" size="{{totalAssetAccounts}}"-->
+                <vaadin-grid-column>
+                    <template class="header">
+                        Account
+                    </template>
+                    <template>
+                        <span><a href="/account/{{item.account}}" on-tap="_tableClick">{{item.accountRS}}</a> {{_isIssuer(item.account, asset.account)}}</span>
+                    </template>
+                </vaadin-grid-column>
+
+                <vaadin-grid-column>
+                    <template class="header">
+                        Quantity ({{asset.name}})
+                    </template>
+                    <template>
+                        <span>{{_accountQuantity(item.quantityQNT, asset.decimals)}}</span>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">
+                        Quantity (%)
+                    </template>
+                    <template>
+                        <span>{{_accountPercentage(item.quantityQNT, asset.quantityQNT)}} %</span>
+                    </template>
+                </vaadin-grid-column>
+            </vaadin-grid>
 			
-			<paper-datatable-card id="assetAccountsCard" header="Asset accounts" data-source="{{assetAccountSource}}" progress id-property="askOrder" page-size="10" page-size-options='[5, 10, 20]'>
-				
-				<div toolbar-main>
-					<paper-icon-button id="chartButton" icon="donut-small" onclick="assetAccountChartDialog.open()"></paper-icon-button>
-					<paper-tooltip for="chartButton" offset="0">Chart</paper-tooltip>
-				</div>
-				
-				<paper-datatable>
-					<!-- data="{{assetAccounts.accountAssets}}" -->
-					<paper-datatable-column header="Account" property="account">
-						<template>
-							<span><a href="/account/{{value.account}}" on-tap="_tableClick">{{value.accountRS}}</a> {{_isIssuer(value.account, asset.account)}}</span>
-						</template>
-					</paper-datatable-column>
-					<paper-datatable-column header="Quantity" property="quantityQNT">
-						<template>
-							<span>{{_accountQuantity(value, asset.decimals)}}</span>
-						</template>
-					</paper-datatable-column>
-					<paper-datatable-column header="Quantity" property="quantityQNT">
-						<template>
-							<span>{{_accountPercentage(value, asset.quantityQNT)}}%</span>
-						</template>
-					</paper-datatable-column>
-				</paper-datatable>
-			</paper-datatable-card>
 			
-			<paper-dialog id="assetAccountChartDialog" with-backdrop>
+			
+			<!--<paper-dialog id="assetAccountChartDialog" with-backdrop>
                 <paper-dialog-scrollable>
                     <highcharts-chart type="pie" data="{{assetAccountsChart}}" chart-options="{{assetAccountsChartOptions}}" highchart-options="{{highchartOptions}}" color-by-point label="Quantity" title="{{asset.name}} share holder chart" height-responsive></highcharts-chart>
                 </paper-dialog-scrollable>
-			</paper-dialog>
+			</paper-dialog>-->
 
 			
 		</template>
@@ -62,10 +71,6 @@
 				assetAccountsLoaded: {
 					type: Boolean,
 					value: false
-				},
-				assetAccountSource: {
-					type:Object,
-					computed: "_assetAccountSource(id, assetAccounts)"
 				},
 				route: {
 					notify: true
@@ -122,18 +127,20 @@
 						if (httpRequest.status === 200){
                             
 							var result = JSON.parse(httpRequest.responseText);
-                            console.log(result);
+                            //console.log(result);
 							var assetAccounts = result.accountAssets.slice();
 							this.assetAccounts = assetAccounts;
 							this.assetAccountsLoaded = true;
 						}
 					}
 				}.bind(this);
-                httpRequest.open("GET", "http://cwallet.burstmining.club:8125/burst?requestType=getAssetAccounts&asset="+this.id);
-                //console.log("http://cwallet.burstmining.club:8125/burst?requestType=getAssetAccounts&asset="+this.id);
+                httpRequest.open("GET", API_URL + "?requestType=getAssetAccounts&asset="+this.id);
 				httpRequest.send();
 			},
-			_assetAccountSource: function(id, assetAccounts){
+			/*_assetAccountSource: function(id, assetAccounts){
+                if(!assetAccounts){
+                    return;
+                }
 				if(!("accountAssets" in assetAccounts)){
 					return {};
 				}
@@ -163,7 +170,7 @@
 
 					length: this.assetAccounts.accountAssets.length
 				}
-			},
+			},*/
 			_getAssetAccountsParams: function(id){
 				return {
 					requestType: "getAssetAccounts",
@@ -183,6 +190,9 @@
 				return (quantity / assetQuantity * 100).toLocaleString();
 			},
 			_getAssetAccountChartData: function(id, assetAccounts){
+                if(!assetAccounts){
+                    return;
+                }
 				if(!("accountAssets" in assetAccounts)){
 					return [];
 				}
@@ -201,11 +211,41 @@
 			},
 			
 			
-			
 			_tableClick: function(e){
 				console.log(e);
-				this.set('route.path', e.srcElement.href);
+				//this.set('route.path', e.srcElement.href);
 			}
 		})
 	</script>
+    
+    <script>
+        /*
+        <paper-datatable-card id="assetAccountsCard" header="Asset accounts" data-source="{{assetAccountSource}}" progress id-property="askOrder" page-size="10" page-size-options='[5, 10, 20]'>
+
+				<div toolbar-main>
+					<paper-icon-button id="chartButton" icon="donut-small" onclick="assetAccountChartDialog.open()"></paper-icon-button>
+					<paper-tooltip for="chartButton" offset="0">Chart</paper-tooltip>
+        </div>
+
+				<paper-datatable>
+					<!-- data="{{assetAccounts.accountAssets}}" -->
+					<paper-datatable-column header="Account" property="account">
+						<template>
+							<span><a href="/account/{{value.account}}" on-tap="_tableClick">{{value.accountRS}}</a> {{_isIssuer(value.account, asset.account)}}</span>
+        </template>
+        </paper-datatable-column>
+					<paper-datatable-column header="Quantity" property="quantityQNT">
+						<template>
+							<span>{{_accountQuantity(value, asset.decimals)}}</span>
+        </template>
+        </paper-datatable-column>
+					<paper-datatable-column header="Quantity" property="quantityQNT">
+						<template>
+							<span>{{_accountPercentage(value, asset.quantityQNT)}}%</span>
+        </template>
+        </paper-datatable-column>
+        </paper-datatable>
+        </paper-datatable-card>
+        */
+    </script>
 </dom-module>

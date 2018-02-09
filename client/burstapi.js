@@ -15,7 +15,7 @@ function burstapi(params){
                 }
             }
         };
-        httpRequest.open("GET", "http://127.0.0.1:8125/burst?" + params);
+        httpRequest.open("GET", API_URL + "?" + params);
         httpRequest.send();
     });
 }

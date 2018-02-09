@@ -4,12 +4,22 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-		<script src="/client/bower_components/webcomponentsjs/webcomponents.min.js"></script>
+        
+        <script>
+            //DB_URL = window.location.protocol + "//" + window.location.hostname + ":5984/";
+            DB_URL = "http://192.168.56.101:5984/";
+            API_URL = "http://192.168.178.35:8112/ATM";
+        </script>
+        
+        <script src="/client/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 		<link rel="import" href="/client/bower_components/polymer/polymer.html">
         
-        <script src="/client/pouchdb-6.1.1.min.js"></script>
-        <script src="/client/bower_components/pouchdb-find/dist/pouchdb.find.js"></script>
+<!--
+        <script src="/client/pouchdb-6.4.3.min.js"></script>
+        <script src="/client/pouchdb.find.js"></script>
+-->
+        <script src="/client/bower_components/pouchdb/dist/pouchdb.min.js"></script>
+        <script src="/client/bower_components/pouchdb/dist/pouchdb.find.min.js"></script>
 		
         <link rel="import" href="/client/elements/explorer-app.html">
 		<style>
@@ -29,8 +39,6 @@
 				padding: 5%;
 				text-align: center;
 			}
-			
-
 			.loader {
 				position: relative;
 				margin: auto;
@@ -43,7 +51,6 @@
 				padding-top: 100%;
 				width:6opx;
 			}
-
 			.circular {
 				-webkit-animation: rotate 2s linear infinite;
 				animation: rotate 2s linear infinite;
@@ -58,7 +65,6 @@
 				right: 0;
 				margin: auto;
 			}
-
 			.path {
 				stroke-dasharray: 1, 200;
 				stroke-dashoffset: 0;
@@ -185,10 +191,12 @@
             }
 
             function finishLoad(){
+                //console.log("Done loadinggg");
                 if(loaded){
                     return;
                 }
                 if(!isChrome){
+                    console.log("OOPPSSSS");
                     if(!readCookie("firstLoad")){
                         createCookie("firstLoad", "true", 14);
                         window.location.reload();
@@ -201,14 +209,15 @@
                 else{
                     var explorer = document.createElement("explorer-app");
                     document.body.append(explorer);
-                    console.log(explorer);
+                    document.getElementById("load-db").outerHTML="";
+                    //console.log(explorer);
                 }
                 loaded = true;
             }
 
             var assets = new PouchDB('assets');
-
-            var rep = PouchDB.replicate("http://127.0.0.1:5984/assets","assets", {
+            
+            var rep = PouchDB.replicate(DB_URL + "assets","assets", {
                 live: true,
                 retry: true
             })
@@ -243,7 +252,7 @@
 				// handle change
 				console.log(info);
 			}).on('paused', function (err) {
-				console.log(err);
+				//console.log(err);
 				finishLoad();
 				// replication paused (e.g. replication up to date, user went offline)
 			}).on('active', function () {

@@ -1,18 +1,26 @@
 <dom-module id="account-queries">
 	<template>
 		<template is="dom-if" if="{{pageready}}">
-			<!--<app-pouchdb-document 
+			<app-pouchdb-document 
 								  db-name="{{newdburl}}" 
 								  doc-id="{{id}}" 
 								  data="{{account}}" 
 								  log="true" 
 								  sequentialTransactions="true"
 								  >
-			</app-pouchdb-document>-->
-			<burst-api
+			</app-pouchdb-document>
+            
+            <!--<app-pouchdb-query
+                               db-name="{{_getdburl(dburl, 'transactions')}}"
+                               selector="{{_txSelector(id)}}"
+                               sort='["timestamp"]'
+                               data="{{transactions}}">
+            </app-pouchdb-query>-->
+            
+			<!--<burst-api
 					   params="{{_getAccountParams(id)}}"
 					   response="{{account}}"
-					   ></burst-api>
+					   ></burst-api>-->
 			
 			
 			
@@ -24,13 +32,15 @@
 	</template>
 
 	<script>
+        // Already declared
+        //const accountsDB  = new PouchDB(DB_URL + '/accounts');
 		Polymer({
 			is: "account-queries",
 
 			properties: {
 				newdburl: {
 					type: String,
-					computed: "_getdburl(dburl)",
+					computed: "_getdburl(dburl, 'accounts')",
 					value: ""
 				},
 				pageready: {
@@ -50,9 +60,28 @@
 					notify:true
 				}
 			},
+            
+            observers: [
+                "_accLoad(id)"
+            ],
+            
+            _accLoad(id){
+                var options = {
+                    selector: {account: id}
+                }
+                accountsDB.get(id).then( function(doc){
+                    this.account = doc
+                }.bind(this));
+            },
+            
+            _txSelector(id){
+                const selector = "$or: ['sender' $eq '" + id + "', 'recipient' $eq '" + id + "']";
+                console.log(selector);
+                return selector;
+            },
 			
-			_getdburl: function(url){
-				return url + "accounts";
+			_getdburl: function(url, suffix){
+				return url + suffix;
 			},
 			_getAccountParams: function(id){
 				return {

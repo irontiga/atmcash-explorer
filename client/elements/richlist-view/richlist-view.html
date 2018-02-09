@@ -4,9 +4,90 @@
 			paper-datatable-card{
 				margin:16px;
 			}
+            paper-input{
+                width:100%;
+                --paper-input-container-input: {
+                    font-size:12px;
+                    margin-top:-10px;
+                    background: rgba(0,0,0,0.1);
+                    padding: 4px 8px;
+                    border-radius: 2px;
+                }
+                --paper-input-container: {
+                    padding-top:0;
+                    height:48px;
+                }
+                --paper-input-container-underline: {
+                    border: 0;
+                }
+                --paper-input-container-underline-focus:{
+                    border:0
+                }
+            }
 		</style>
+        
+        <template is="dom-if" if="{{totalAccountsLoaded}}">
+            <iron-grid class="gapped">
 
-		<paper-datatable-card id="richlistCard" header="Richlist" data-source="{{richlistSource}}" progress page-size="10" page-size-option="[10,20,50]" page="{{page}}">
+                <div class="xs12 s12 m12">
+                    <paper-card>
+                        <template is="dom-if" if="{{loading}}">
+                            <paper-progress indeterminate class="blue" style="width:100%; background: transparent; position:absolute; z-index:2;"></paper-progress>
+                        </template>
+                        <vaadin-grid style="height:100%;" loading="{{loading}}" id="richlistGrid" aria-label="Richlist" data-provider="[[richlistProvider]]" size="{{totalAccounts}}">
+                            
+                            <vaadin-grid-column flex-grow="0">
+                                <template class="header">Rank</template>
+                                <template>[[plusOne(index)]]</template>
+                            </vaadin-grid-column>
+                            
+                            <vaadin-grid-column>
+                                <template class="header">
+                                    <vaadin-grid-filter style="width:90%;" aria-label="Name" path="effectiveName" value="[[_filterName]]">
+                                        <paper-input slot="filter" placeholder="Name" value="{{_filterName::input}}" focus-target></paper-input>
+                                    </vaadin-grid-filter>
+                                </template>
+                                <template>
+                                    <span><a href="/account/{{item.name.id}}" dialog-confirm on-tap="_tableClick">{{item.name.name}}</a></span>
+                                </template>
+                            </vaadin-grid-column>
+                            
+<!-- Will have to turn search off when there are more accounts (5k or whatever)
+                            <vaadin-grid-column>
+                                <template class="header">
+                                    Name
+                                </template>
+                                <template>
+                                    <span><a href="/account/{{item.name.id}}" dialog-confirm on-tap="_tableClick">{{item.name.name}}</a></span>
+                                </template>
+                            </vaadin-grid-column>
+-->
+                            
+
+                            <vaadin-grid-column>
+                                <template class="header">
+                                    <vaadin-grid-sorter path="forgedBalanceNQT" direction="desc">Mined Balance</vaadin-grid-sorter>
+                                </template>
+                                <template>{{_format(item.forgedBalanceNQT)}}</template>
+                            </vaadin-grid-column>
+
+                            <vaadin-grid-column>
+                                <template class="header">
+                                    <vaadin-grid-sorter path="balanceNQT" direction="desc">Balance</vaadin-grid-sorter>
+                                </template>
+                                <template>{{_format(item.balanceNQT)}}</template>
+                            </vaadin-grid-column>
+
+
+
+                        </vaadin-grid>
+                    </paper-card>
+                </div>
+            </iron-grid>
+            
+        </template>
+
+		<!--<paper-datatable-card id="richlistCard" header="Richlist" data-source="{{richlistSource}}" progress page-size="10" page-size-option="[10,20,50]" page="{{page}}">
 			<paper-datatable>
 				<paper-datatable-column header="Name" property="name">
 					<template>
@@ -24,15 +105,14 @@
 					</template>
 				</paper-datatable-column>
 			</paper-datatable>
-		</paper-datatable-card>
+		</paper-datatable-card>-->
 	</template>
 
 	<script>
-		var accountsDB = new PouchDB("http://127.0.0.1:5984/accounts");
+        var accountsDB = new PouchDB(DB_URL + "/accounts");
+        
+        let ACCOUNTS_LENGTH;
 		
-		accountsDB.info().then(function(response){
-			console.log(response);
-		});
 		Polymer({
 			is: "richlist-view",
 
@@ -49,8 +129,99 @@
 				},
 				route:{
 					notify:true
-				}
+				},
+                totalAccountsLoaded:{
+                    type: Boolean,
+                    value: false
+                },
+                loading: {
+                    type: Boolean,
+                    value: false
+                }
 			},
+            
+            plusOne(num){ return num + 1},
+            
+            richlistProvider(params, callback){
+                
+                var options ={
+                    selector: {
+                        balanceNQT: {$gt: null},
+                        forgedBalanceNQT: {$gt: null}
+                    },
+                    fields:["name",  "balanceNQT", "_id", "forgedBalanceNQT", "accountRS"],
+                    skip: params.pageSize*(params.page),
+                    limit: params.pageSize
+                }
+
+                //console.log(params.sortOrders);
+                //console.log(params.sortOrders.length);
+
+                if(params.sortOrders.length != 0){
+                    options.sort = params.sortOrders.map(order => {
+                        return {
+                            [params.sortOrders[0].path]: params.sortOrders[0].direction
+                        };
+                    });
+                }
+                
+                const filtering = params.filters.length != 0 && params.filters[0].value != "";
+                
+                if(filtering){
+                    console.log(params.filters);
+                    const expression = "(?i)" + params.filters[0].value;
+                    options.selector["$or"] = [
+                        {"_id": {"$regex": expression}},
+                        {"name": {"$regex": expression}},
+                        {"accountRS": {"$regex": expression}}
+                    ]
+                }
+                else{
+                    this.size = ACCOUNTS_LENGTH;
+                }
+                
+                //console.log(options);
+                
+                accountsDB.find(options)
+                    .then(function(response){
+                    console.log(JSON.stringify(response));
+                    var docs = response.docs.map(function(account){
+                        if(!("name" in account) || account.name == ""){
+                            account.name= {
+                                name : account.accountRS
+                            }
+                        }
+                        else{
+                            account.name = {
+                                name: account.name
+                            }
+                        }
+                        account.name.id = account._id;
+                        account.balanceNQT = account.balanceNQT / 100000000;
+                        account.forgedBalanceNQT = account.forgedBalanceNQT / 100000000;
+                        return account;
+                    });
+                    if(filtering){
+                        this.size = docs.length;
+                    }
+                    console.log(docs);
+                    callback(docs);
+                }.bind(this))
+                    .catch(err => {
+                    console.log(err);
+                })
+            },
+            
+            ready(){
+                accountsDB.info().then(function(info){
+                    this.totalAccounts = info.doc_count - 3;
+                    ACCOUNTS_LENGTH = this.totalAccounts;
+                    this.totalAccountsLoaded = true;
+                }.bind(this));
+                
+            },
+            
+            
 			_richlistSource: function(page){
 				if(page < 1){
 					this.page = 1;
@@ -95,7 +266,7 @@
 				}
 			},
 			_tableClick: function(e){
-				this.set('route.path', e.srcElement.href);
+				//this.set('route.path', e.srcElement.href);
 			},
 			_pageObserver: function(){
 				

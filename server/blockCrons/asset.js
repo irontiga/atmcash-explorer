@@ -65,6 +65,7 @@ function assetUpdate(assetID){
 		})
 			.then(assetInfo => {
 			if("errorCode" in assetInfo){
+                //console.log("GGGRRREEERRRROOORRRR");
 				console.log(assetInfo);
 				return Promise.reject(assetInfo);
 			}
@@ -82,6 +83,7 @@ function assetUpdate(assetID){
 }
 
 function getNewAssetInfo(assetInfo){
+    console.log("Getting new info for " + assetInfo.name);
 	const newAssetInfo = assetInfo;
 	//console.log("Gettings new asset info");
 	// 20 most recent trades
@@ -103,7 +105,7 @@ function getNewAssetInfo(assetInfo){
 	.then(trades => {
 		//trades = trades.docs;
 		trades = trades.trades;
-		
+        //console.log(trades);
 		if(trades.length == 0){
 			
 			newAssetInfo.candlestickChart = [];
@@ -122,7 +124,7 @@ function getNewAssetInfo(assetInfo){
 		else{
 			
 			const lastTrade = trades[0];
-
+            
 			const charts = tradeHelpers.chartData(trades.slice(), assetInfo);
 			newAssetInfo.candlestickChart = charts.candlestickChart;
 			newAssetInfo.volumeChart = charts.volumeChart;

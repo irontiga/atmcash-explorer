@@ -3,7 +3,7 @@
 		<style include="app-styles">
 		</style>
 		
-		<paper-datatable-card id="accountTradesCard" header="Trades" data-source="{{accountTradesSource}}" progress page-size="5" page-size-options='[5, 10,20,50]'>
+		<!--<paper-datatable-card id="accountTradesCard" header="Trades" data-source="{{accountTradesSource}}" progress page-size="5" page-size-options='[5, 10,20,50]'>
 			<div toolbar-main>
 				<paper-icon-button icon="cached" on-tap="_refreshTrades"></paper-icon-button>
 			</div>
@@ -47,7 +47,7 @@
 				</paper-datatable-column>
 				
 			</paper-datatable>
-		</paper-datatable-card>
+		</paper-datatable-card>-->
 	</template>
 	<script>
 		Polymer({
@@ -126,7 +126,7 @@
 
 			_tableClick: function(e){
 				console.log(e);
-				this.set('route.path', e.srcElement.href);
+				//this.set('route.path', e.srcElement.href);
 			},
 
 			_tradeColor: function(type){
@@ -159,12 +159,12 @@
 			},
 			
 			_idObserver: function(){
-				this.$.accountTradesCard.firstPage();
+				//this.$.accountTradesCard.firstPage();
 			},
 
 			ready: function(){
 				setInterval(function(){
-					this.$.accountTradesCard.retrieveVisibleData();
+					//this.$.accountTradesCard.retrieveVisibleData();
 				}.bind(this),60 * 1000)
 			}
 		});

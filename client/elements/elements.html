@@ -1,10 +1,12 @@
 <!-- Styles -->
 <link rel="import" href="/client/bower_components/paper-styles/typography.html">
 <link rel="import" href="/client/bower_components/paper-styles/color.html">
+<link rel="import" href="/client/bower_components/paper-styles/shadow.html">
 <link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<link rel="import" href="/client/styles/app-styles.html">
 <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400" rel="stylesheet">
+<link rel="import" href="/client/styles/app-styles.html">
 
 <!-- Database -->
 <link rel="import" href="/client/elements/asset-db/asset-db.html">
@@ -13,22 +15,21 @@
 <link rel="import" href="/client/bower_components/paper-dialog/paper-dialog.html"></link>
 <link rel="import" href="/client/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"></link>
 
-<link rel="import" href="/client/bower_components/paper-material/paper-material.html">
-<link rel="import" href="/client/bower_components/paper-drawer-panel/paper-drawer-panel.html">
-<link rel="import" href="/client/bower_components/paper-header-panel/paper-header-panel.html">
+<!-- Promise polyfill -->
+<link rel="import" href="/client/bower_components/promise-polyfill/promise-polyfill-lite.html">
+
+
 <link rel="import" href="/client/bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="/client/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-<link rel="import" href="/client/bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="/client/bower_components/paper-item/paper-item.html">
 <link rel="import" href="/client/bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="/client/bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="/client/bower_components/paper-menu-button/paper-menu-button.html">
-<link rel="import" href="/client/bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="/client/bower_components/paper-item/paper-item.html">
 <link rel="import" href="/client/bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="/client/bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="/client/bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="/client/bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="/client/bower_components/paper-listbox/paper-listbox.html">
 
 <link rel="import" href="/client/bower_components/paper-input/paper-input.html">
 <link rel="import" href="/client/bower_components/paper-input/paper-input-container.html">
@@ -37,14 +38,20 @@
 <link rel="import" href="/client/bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="/client/bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="/client/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
+<!--
 <link rel="import" href="/client/bower_components/highcharts-chart/highcharts-chart.html">
-<link rel="import" href="/client/bower_components/highcharts-chart/highcharts-stock.html">
+<link rel="import" href="/client/bower_components/highcharts-chart/highcharts-stock.html"> -->
 <link rel="import" href="/client/bower_components/paper-card/paper-card.html">
-<link rel="import" href="/client/bower_components/iron-grid/iron-grid.html">
+<link rel="import" href="/client/bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="/client/bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="/client/bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="/client/bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="/client/bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="/client/bower_components/paper-ripple/paper-ripple.html">
+
 
 <link rel="import" href="/client/bower_components/iron-lazy-pages/iron-lazy-pages.html">
-<link rel="import" href="/client/bower_components/iron-lazy-pages/iron-lazy-page.html">
-<link rel="import" href="/client/bower_components/iron-lazy-pages/neon-lazy-pages.html">
 
 
 <!-- BURST API -->
@@ -56,10 +63,18 @@
 <link rel="import" href="/client/bower_components/app-pouchdb/app-pouchdb-query.html">
 <link rel="import" href="/client/bower_components/app-pouchdb/app-pouchdb-index.html">
 
+<!-- Vaadin -->
+<link rel="import" href="/client/bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="/client/bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="/client/bower_components/vaadin-grid/vaadin-grid-sorter.html">
+<link rel="import" href="/client/bower_components/vaadin-grid/vaadin-grid-filter.html">
 <!-- Datatable -->
-<link rel="import" href="/client/bower_components/paper-datatable/paper-datatable-column.html">
+<!--<link rel="import" href="/client/bower_components/paper-datatable/paper-datatable-column.html">
 <link rel="import" href="/client/bower_components/paper-datatable/paper-datatable.html">
-<link rel="import" href="/client/bower_components/paper-datatable/paper-datatable-card.html">
+<link rel="import" href="/client/bower_components/paper-datatable/paper-datatable-card.html">-->
+
+<!-- Iron-grid...bootstrap/materialize style grid -->
+<link rel="import" href="/client/bower_components/iron-grid/iron-grid.html">
 
 
 <!-- Router -->
@@ -67,7 +82,7 @@
 <link rel="import" href="/client/bower_components/app-route/app-route.html">
 
 <!-- HIGHCHARTS -->
-<!--<script src="/client/bower_components/highcharts/highstock.js"></script>-->
+<script src="/client/bower_components/highcharts/highstock.js"></script>
 
 <!-- My elements -->
 <link rel="import" href="/client/elements/inner-html/inner-html.html">

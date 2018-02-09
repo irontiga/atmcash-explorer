@@ -1,22 +1,58 @@
 <dom-module id="all-assets">
-	<style is="custom-style" include="app-styles">
-		.thin-name{
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			/*max-width: 50px;*/
-			display: block;
-		}
-        :host{
-            margin:0;
-        }
-	</style>
 	<template>
+        <style is="custom-style" include="app-styles">
+            .thin-name{
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                /*max-width: 50px;*/
+                display: block;
+            }
+            :host{
+                margin:0;
+            }
+            vaadin-grid{
+                border-left:0;
+                border-right:0;
+                border-bottom: 0;
+            }
+        </style>
+
+        
+        
+        
+        <!--<paper-icon-button icon="cached" on-tap="_refreshTx"></paper-icon-button>-->
+        <!-- ^ Was above slot -->
 		<template is="dom-if" if="{{assetLengthLoaded}}">
-			<paper-datatable-card id="allAssetsCard" header="All Assets" data-source="{{_allAssetsSource()}}" progress id-property="_id" page-size="{{pageSize}}" page-size-options="[]">
-				<div toolbar-main>
-					<!--<paper-icon-button icon="cached" on-tap="_refreshTx"></paper-icon-button>-->
-					<content></content>
+            
+            <vaadin-grid id="allAssetsGrid" aria-label="Assets" data-provider="[[allAssetsProvider]]" size="{{assetLength}}">
+
+                <!--<vaadin-grid-column width="50px" flex-grow="0">
+<template class="header">#</template>
+<template>[[index]]</template>
+</vaadin-grid-column>-->
+
+                <vaadin-grid-column>
+                    <template class="header">
+                        <vaadin-grid-sorter path="name">Name</vaadin-grid-sorter>
+                    </template>
+                    <template>
+                        <span class$="{{_nameClass(full)}}"><a href="/asset/{{item.name.id}}" dialog-confirm on-tap="_tableClick">{{item.name.name}}</a></span>
+                    </template>
+                </vaadin-grid-column>
+
+                <vaadin-grid-column>
+                    <template class="header">
+                        <vaadin-grid-sorter path="monthlyVolume" direction="desc">30D Vol</vaadin-grid-sorter>
+                    </template>
+                    <template>[[item.monthlyVolume]]</template>
+                </vaadin-grid-column>
+
+            </vaadin-grid>
+			
+            <!--<paper-datatable-card id="allAssetsCard" header="All Assets" data-source="{{_allAssetsSource()}}" progress id-property="_id" page-size="{{pageSize}}" page-size-options="[]">
+				<div toolbar-main>		
+					<slot></slot>
 				</div>
 				<paper-datatable id="allAssetsDatatable">
 					<paper-datatable-column header="Name" property="name">
@@ -47,115 +83,269 @@
 						</paper-datatable-column>
 					</template>
 				</paper-datatable>
-			</paper-datatable-card>
+			</paper-datatable-card>-->
 		</template>
 	</template>
     
 	<script>
 		
 		var assetsDB  = new PouchDB('assets');
+        
+        class AllAssets extends Polymer.Element{
+            static get is() { return 'all-assets'; }
+
+            constructor() {
+                super();
+            }
+
+            static get properties() {
+                return {
+                    route: {
+                        notify: true
+                    },
+                    full: {
+                        type:Boolean,
+                        value: false
+                    },
+                    pageSize:{
+                        type: Number,
+                        value: 10
+                    },
+                    assetLength: {
+                        type: Number
+                    },
+                    assetLengthLoaded:{
+                        type:Boolean,
+                        value: false
+                    }
+                }
+            }
+            
+            _nameClass(full){
+                if(full){
+                    return "";
+                }
+                return "thin-name";
+            }
+
+            _format(num){
+                return num.toLocaleString();
+            }
+
+            _tableClick(e){
+                //this.set('route.path', e.srcElement.href);
+            }
+
+            ready(){
+                super.ready();
+                this.assetsDB = assetsDB;
+                
+                this.assetsDB.info().then(function(info){
+                    this.assetLength = info.doc_count - 5;
+                    //console.log(this.assetLength);
+                    this.assetLengthLoaded = true;
+                }.bind(this));
+                
+                setInterval(function(){
+                    this.shadowRoot.querySelector("#allAssetsGrid").clearCache();
+				}.bind(this), 20 * 1000);
+                
+                this.allAssetsProvider = (params, callback) => {
+                    
+                    var options = {
+                        selector: {
+                            _id: {$gt: null},
+                            monthlyVolume: {$gt: null},
+                            weeklyVolume: {$gt: null},
+                            dailyVolume: {$gt: null},
+                            numberOfTrades : {$gt: null}
+                        },
+                        fields:["monthlyVolume", "weeklyVolume", "dailyVolume","numberOfTrades", "name", "_id"],
+                        skip: params.pageSize*(params.page),
+                        limit: params.pageSize
+                    }
+                    
+                    if(params.sortOrders.length != 0){
+                        options.sort = params.sortOrders.map(order => {
+                            return {
+                                [params.sortOrders[0].path]: params.sortOrders[0].direction
+                            };
+                        });
+                    }
+                    
+                    this.assetsDB.find(options)
+                        .then(function(response){
+                        var docs = response.docs.map(function(asset){
+                            asset.name = {
+                                name: asset.name,
+                                id: asset._id
+                            }
+                            
+                            return asset;
+                        });
+                        //console.log(docs)
+                        callback(docs);
+                    })
+                        .catch(err => {
+                        console.log(err);
+                    })
+                };
+            }
+            
+        }
+        
+        customElements.define('all-assets', AllAssets);
 		
-		var app = Polymer({
-			is: "all-assets",
-
-			properties: {
-				route: {
-					notify: true
-				},
-				full: {
-					type:Boolean,
-					value: false
-				},
-				pageSize:{
-					type: Number,
-					value: 10
-				},
-				
-				assetLength: {
-					type: Number
-				},
-				assetLengthLoaded:{
-					type:Boolean,
-					value: false
-				}
-			},
-			
-			_nameClass: function(full){
-				if(full){
-					return "";
-				}
-				return "thin-name";
-			},
-			
-			_format: function(num){
-				return num.toLocaleString();
-			},
-			
-			_tableClick: function(e){
-				this.set('route.path', e.srcElement.href);
-			},
-
-			_allAssetsSource: function(){
-				
-				/*var assetsDBInfo = {}
-				
-				assetsDB.info(function(info){
-					this.$.allAssetsCard.dataSource.length = info.doc_count;
-				}.bind(this))*/
-
-				var assetSource = {
-					get: function(sort, page, pageSize){
-						//console.log(sort);
-						return this.assetsDB.find({
-							selector: {
-								_id: {$gt: null},
-								monthlyVolume: {$gt: null},
-								weeklyVolume: {$gt: null},
-								dailyVolume: {$gt: null},
-								numberOfTrades : {$gt: null}
-							},
-							fields:["monthlyVolume", "weeklyVolume", "dailyVolume","numberOfTrades", "name", "_id"],
-							sort: [{
-								[sort.property]: sort.direction
-							}],
-							skip: pageSize*(page-1),
-							limit: pageSize
-						})
-							.then(function(response){
-							var docs = response.docs.map(function(asset){
-								asset.name = {
-									name: asset.name,
-									id: asset._id
-								}
-
-								return asset;
-							});
-							return docs;
-						})
-					}.bind(this),
-
-					set: function(){
-						//console.log("uhhh");
-					}.bind(this),
-					
-					length: this.assetLength
-				}
-				
-				return assetSource;
-			},
-
-			ready: function(){
-				this.assetsDB = assetsDB;
-				
-				this.assetsDB.info().then(function(info){
-					this.assetLengthLoaded = true;
-					this.assetLength = info.doc_count - 5;
-				}.bind(this));
-				
-				setInterval(function(){
-					this.$$("#allAssetsCard").retrieveVisibleData();
-				}.bind(this), 60 * 1000)
-			}
-		})
 	</script>
 </dom-module>
+
+<!--
+var app = Polymer({
+is: "all-assets",
+
+properties: {
+route: {
+notify: true
+},
+full: {
+type:Boolean,
+value: false
+},
+pageSize:{
+type: Number,
+value: 10
+},
+
+assetLength: {
+type: Number
+},
+assetLengthLoaded:{
+type:Boolean,
+value: false
+}
+},
+
+_nameClass: function(full){
+if(full){
+return "";
+}
+return "thin-name";
+},
+
+_format: function(num){
+return num.toLocaleString();
+},
+
+_tableClick: function(e){
+this.set('route.path', e.srcElement.href);
+},
+
+_allAssetsSource: function(){
+
+/*var assetsDBInfo = {}
+
+assetsDB.info(function(info){
+this.$.allAssetsCard.dataSource.length = info.doc_count;
+}.bind(this))*/
+
+var assetSource = {
+get: function(sort, page, pageSize){
+//console.log(sort);
+return this.assetsDB.find({
+selector: {
+_id: {$gt: null},
+monthlyVolume: {$gt: null},
+weeklyVolume: {$gt: null},
+dailyVolume: {$gt: null},
+numberOfTrades : {$gt: null}
+},
+fields:["monthlyVolume", "weeklyVolume", "dailyVolume","numberOfTrades", "name", "_id"],
+sort: [{
+[sort.property]: sort.direction
+}],
+skip: pageSize*(page-1),
+limit: pageSize
+})
+.then(function(response){
+var docs = response.docs.map(function(asset){
+asset.name = {
+name: asset.name,
+id: asset._id
+}
+
+return asset;
+});
+return docs;
+})
+}.bind(this),
+
+set: function(){
+//console.log("uhhh");
+}.bind(this),
+
+length: this.assetLength
+}
+
+return assetSource;
+},
+
+ready: function(){
+this.assetsDB = assetsDB;
+
+this.assetsDB.info().then(function(info){
+this.assetLengthLoaded = true;
+this.assetLength = info.doc_count - 5;
+}.bind(this));
+
+/*setInterval(function(){
+this.shadowRoot.querySelector("#allAssetsCard").retrieveVisibleData();
+}.bind(this), 60 * 1000);*/
+
+
+
+
+
+/*  ------------------------------
+Vaadin Grid
+---------------------------- */
+this.size = this.assetLength;
+this.dataProvider = (params, callback) => {
+/*const xhr = new XMLHttpRequest();
+xhr.onload = () => callback(JSON.parse(xhr.responseText).result);
+const index = params.page * params.pageSize;
+xhr.open('GET', 'https://demo.vaadin.com/demo-data/1.0/people?index=' + index + '&count=' + params.pageSize, true);
+xhr.send();*/
+
+
+
+this.assetsDB.find({
+selector: {
+_id: {$gt: null},
+monthlyVolume: {$gt: null},
+weeklyVolume: {$gt: null},
+dailyVolume: {$gt: null},
+numberOfTrades : {$gt: null}
+},
+fields:["monthlyVolume", "weeklyVolume", "dailyVolume","numberOfTrades", "name", "_id"],
+/*sort: [{
+[sort.property]: sort.direction
+}],*/
+skip: params.pageSize*(params.page-1),
+limit: params.pageSize
+})
+.then(function(response){
+var docs = response.docs.map(function(asset){
+asset.name = {
+name: asset.name,
+id: asset._id
+}
+
+return asset;
+});
+//return docs;
+callback(docs)
+})
+};
+}
+})
+-->

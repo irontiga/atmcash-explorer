@@ -3,7 +3,7 @@
 		
 		<iron-ajax
 				   auto
-				   url="http://127.0.0.1:8125/burst"
+                   url="{{apiUrl}}"
 				   params="{{params}}"
 				   handle-as="json"
 				   last-response="{{response}}"
@@ -25,7 +25,11 @@
 				},
 				params: {
 					type: Object
-				}
+				},
+                apiUrl: {
+                    type: String,
+                    value: API_URL
+                }
 			},
 			_handleResponse: function(response){
 				//console.log(response);

@@ -3,55 +3,71 @@
 		<style include="app-styles">
 		</style>
 		
+<!--
 		<burst-api
 				   params="{{_getTransactionParams(id)}}"
 				   response="{{transactions}}"
 				   ></burst-api>
+-->
+        <paper-card>
+
+            <!--   data-provider="{{accountTransactionsProvider}}" size="{{}}" -->
+            <vaadin-grid id="accountTransactionGrid" aria-label="Transactions" data-provider="{{accountTransactionsProvider}}" size="100">
+                <vaadin-grid-column>
+                    <template class="header">Time</template>
+                    <template>
+                        {{_time(item.timestamp)}}
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">Transaction</template>
+                    <template>
+                        <a href="/transaction/{{item._id}}" on-tap="_tableClick">{{item._id}}</a>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">From</template>
+                    <template>
+                        <a href="/account/{{item.sender}}" on-tap="_tableClick">{{item.senderRS}}</a>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">Amount</template>
+                    <template>
+                        <span class$="{{_txColor(item.sender)}}">{{_formatNQT(item.amountNQT)}}<small class="thin">{{_NQTDecimals(item.amountNQT)}} <b>ATM</b></small></span>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">To</template>
+                    <template>
+                        <a href="/account/{{item.recipient}}" on-tap="_tableClick">{{item.recipientRS}}</a>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">Type</template>
+                    <template>
+                        <span>{{_txType(item.type, item.subtype)}}</span>
+                    </template>
+                </vaadin-grid-column>
+                
+                <vaadin-grid-column>
+                    <template class="header">Block height</template>
+                    <template>
+                        <a href="/block/{{item.block}}">{{_format(item.ecBlockHeight)}}</a>
+                    </template>
+                </vaadin-grid-column>
+            </vaadin-grid>
+        </paper-card>
 		
-		<paper-datatable-card id="transactionsCard" header="Transactions" data-source="{{txSource}}" progress id-property="transaction" page-size="5" page-size-options='[5, 10,20,50]'>
-			<div toolbar-main>
-				<paper-icon-button icon="cached" on-tap="_refreshTx"></paper-icon-button>
-			</div>
-			<paper-datatable id="transactionDatatable">
-				<paper-datatable-column id="nameColumn" header="Time" property="timestamp" sorted>
-					<template>
-						<span>{{_time(value)}}</span>
-					</template>
-				</paper-datatable-column>
-				<paper-datatable-column header="Transaction" property="transaction">
-					<template>
-						<a href="/transaction/{{value}}" on-tap="_tableClick">{{value}}</a>
-					</template>
-				</paper-datatable-column>
-				<paper-datatable-column header="From" property="sender">
-					<template>
-						<a href="/account/{{value.sender}}" on-tap="_tableClick">{{value.senderRS}}</a>
-					</template>
-				</paper-datatable-column>
-				<paper-datatable-column header="Amount" property="amountNQT">
-					<template>
-						<span class$="{{_txColor(value.sender.sender)}}"><b>B</b> {{_formatNQT(value.amountNQT)}}<small class="thin">{{_NQTDecimals(value.amountNQT)}}</small></span>
-					</template>
-				</paper-datatable-column>
-				<paper-datatable-column header="To" property="recipient">
-					<template>
-						<a href="/account/{{value.recipient}}" on-tap="_tableClick">{{value.recipientRS}}</a>
-					</template>
-				</paper-datatable-column>
-				<paper-datatable-column header="Type" property="type">
-					<template>
-						<span>{{_txType(value.type, value.subtype)}}</span>
-					</template>
-				</paper-datatable-column>
-				<paper-datatable-column header="Block height" property="ecBlockHeight">
-					<template>
-						<span>{{_format(value)}}</span>
-					</template>
-				</paper-datatable-column>
-			</paper-datatable>
-		</paper-datatable-card>
 	</template>
 	<script>
+        const transactionsDB  = new PouchDB(DB_URL + '/transactions');
+        
 		Polymer({
 			is: "account-transactions",
 			
@@ -77,56 +93,6 @@
 				};
 			},
 			
-			_txSource: function(id){
-				return {
-					get: function(sort, page, pageSize){
-						// Promise
-						return new Promise(function(resolve, reject){
-							var httpRequest = new XMLHttpRequest();
-							// Responose
-							httpRequest.onreadystatechange = function(){
-								if (httpRequest.readyState === XMLHttpRequest.DONE) {
-									if (httpRequest.status === 200){
-
-										var result = JSON.parse(httpRequest.responseText);
-										var transactions = result.transactions;
-
-										transactions = transactions.map(function(tx){
-											tx.type = {
-												type: tx.type,
-												subtype: tx.subtype
-											};
-											tx.sender = {
-												sender: tx.sender,
-												senderRS: tx.senderRS
-											};
-											tx.recipient = {
-												recipient: tx.recipient,
-												recipientRS: tx.recipientRS
-											};
-											tx.amountNQT = {
-												amountNQT: tx.amountNQT,
-												sender: tx.sender
-											}
-											return tx;
-										}.bind(this));
-
-										resolve(transactions);
-									}
-								}
-							}.bind(this);
-
-							var mySize = pageSize;
-							httpRequest.open("GET", "http://127.0.0.1:8125/burst?requestType=getAccountTransactions&account="+this.id+"&firstIndex="+mySize*(page-1)+"&lastIndex="+(page*mySize-1));
-							httpRequest.send();
-						}.bind(this));
-					}.bind(this),
-					set: function(id, property, value){
-						console.info("Bleh");
-					}.bind(this)
-				}
-			},
-			
 			_refreshTx: function(){
 				this.$.transactionsCard.firstPage();
 				this.$.transactionsCard.retrieveVisibleData();
@@ -134,7 +100,7 @@
 
 			_tableClick: function(e){
 				console.log(e);
-				this.set('route.path', e.srcElement.href);
+				//this.set('route.path', e.srcElement.href);
 			},
 
 			_txColor: function(sender){
@@ -178,14 +144,46 @@
 			
 
 			_idObserver: function(){
-				this.$.transactionsCard.firstPage();
+				//this.$.transactionsCard.firstPage();
 			},
 
 			ready: function(){
 				setInterval(function(){
-					this.$.transactionsCard.retrieveVisibleData();
-				}.bind(this),60 * 1000)
-			}
-		});
+					//this.$.transactionsCard.retrieveVisibleData();
+				}.bind(this),60 * 1000);
+                
+                const ID = this.id;
+                
+                this.accountTransactionsProvider = (params, callback) => {
+                    var options = {
+                        selector: {
+                            $or: [
+                                {recipient: ID},
+                                {sender: ID}
+                            ]
+                        },
+                        fields:["_id", "timestamp", "sender", "senderRS","recipient", "recipientRS", "block", "ecBlockHeight", "amountNQT", "type", "subtype"],
+                        skip: params.pageSize*(params.page),
+                        limit: params.pageSize
+                    }
+                    
+                    console.log(options);
+                    transactionsDB.find(options)
+                        .then(function(response){
+                        console.log(response);
+                        var docs = response.docs.map(function(transaction){
+                            return transaction;
+                        });
+                        //console.log(docs)
+                        callback(docs);
+                    })
+                        .catch(err => {
+                        console.log(err);
+                    })
+                };
+                
+                    
+            }
+        });
 	</script>
 </dom-module>

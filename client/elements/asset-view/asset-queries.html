@@ -114,9 +114,9 @@
 			ready: function(){
 				this.pageready = true;
 				// Refresh the all assets list every now n then
-				console.log("Updating all assets list");
+				//console.log("Updating all assets list");
 				setInterval(function(){
-					this.allAssetsQuery.refresh();
+					this.shadorwRoot.querySelector("#allAssetsQuery").refresh();
 				}, 200000);
 			}
 		});

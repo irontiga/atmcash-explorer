@@ -10,7 +10,7 @@
 			
 			ready: function(){
 				var assets = new PouchDB('assets');
-				assets.replicate.from("http://127.0.0.1:5984/assets", {live: true}, function(err){
+                assets.replicate.from(DB_URL + "assets", {live: true}, function(err){
 					console.log(err);
 				});
 			}

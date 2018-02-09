@@ -1,5 +1,4 @@
 <link rel="import" href="/client/elements/elements.html">
-<link rel="import" href="/client/styles/app-styles.html">
 
 <!-- Analytics -->
 <script>
@@ -14,148 +13,311 @@
 
 
 <dom-module id="explorer-app">
-	<style is="custom-style" include="app-styles">
-		paper-drawer-panel {
-			--paper-drawer-panel-left-drawer-container: {
-
-			};
-		}
-		:root {
-			/* Label and underline color when the input is not focused */
-			--paper-input-container-color: rgba(255,255,255,0.7);
-
-			/* Label and underline color when the input is focused */
-			--paper-input-container-focus-color: rgba(255, 255, 255, 1);
-			
-			--paper-input-container-input-color: #fff;
-
-		}
-		.main-search{
-			margin-top:-16px;
-			
-		}
-		.title{
-			color:#fff;
-		}
-		.thin-asset-name{
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			max-width: 50px;
-			display: block;
-		}
-        
-        .search-container{
-            background: rgba(255,255,255,0.5);
-            padding:0;
-            height:40px;
-            border-radius:2px;
-            padding-left:12px;
-            width:100%;
-        }
-        .search-container paper-icon-button{
-            top:-18px;
-        }
-        #searchInput{
-            top:-18px;
-            color: #fff;
-            width:100%;
-        }
-        #searchInput:focus{
-            border-bottom: 0;
-        }
-        
-        ::-webkit-input-placeholder { /* Chrome */
-            color: #fff;
-        }
-        :-ms-input-placeholder { /* IE 10+ */
-            color: #fff;
-        }
-        ::-moz-placeholder { /* Firefox 19+ */
-            color: #fff;
-            opacity: 1;
-        }
-        :-moz-placeholder { /* Firefox 4 - 18 */
-            color: #fff;
-            opacity: 1;
-        }
-	</style>
 	<template>
+        <custom-style>
+            <style is="custom-style" include="app-styles">
+                :host > * {
+                    /* Label and underline color when the input is not focused */
+                    /*--paper-input-container-color: rgba(255,255,255,0.7);
+
+                    --paper-input-container-focus-color: rgba(255, 255, 255, 1);
+
+                    --paper-input-container-input-color: #fff;*/
+
+                }
+                .main-search{
+                    margin-top:-16px;
+
+                }
+                .thin-asset-name{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 50px;
+                    display: block;
+                }
+
+                .search-container{
+                    margin-right: 24px;
+                    background: rgba(255,255,255,0.5);
+                    padding:0;
+                    padding-left:12px;
+                    width:auto;
+                    width:360px;
+                    border-radius:2px;
+                    padding:6px 8px 6px 12px;
+                }
+                .search-container iron-input{
+                    width:calc(100% - 32px);
+                }
+                .search-container iron-icon{
+                    display:inline-block;
+                }
+                #searchInput{
+                    margin-top:2px;
+                    top:-14px;
+                    color: #fff;
+                    width:100%;
+                    background: transparent;
+                    border: 0;
+                    font-size: 18px;
+                }
+                #searchInput:focus{
+                    border-bottom: 0;
+                    border:0;
+                    outline: none;
+                }
+
+                ::-webkit-input-placeholder { /* Chrome */
+                    color: #fff;
+                }
+                :-ms-input-placeholder { /* IE 10+ */
+                    color: #fff;
+                }
+                ::-moz-placeholder { /* Firefox 19+ */
+                    color: #fff;
+                    opacity: 1;
+                }
+                :-moz-placeholder { /* Firefox 4 - 18 */
+                    color: #fff;
+                    opacity: 1;
+                }
+
+                .page-view-title{
+                    text-transform: capitalize;
+                    /*color:#fff;*/
+                }
+                
+                app-drawer{
+                    @apply --shadow-elevation-4dp;
+                }
+
+                app-header{
+                    background: var(--primary-color);
+                    @apply --shadow-elevation-2dp;
+                }
+                app-header app-toolbar *{
+                    color:rgba(255,255,255,0.95);
+                }
+                #main-body{
+                    height:calc(100vh - 68px);
+                    overflow: auto;
+                }
+                
+                paper-item a, paper-item a:hover{
+                    color:#333;
+                }
+                
+                @media screen and (min-width: 640px) {
+                    .show-only-mobile{
+                        display: none;
+                    }
+                }
+                
+                .title{
+                    font-weight: 100;
+                }
+            </style>
+        </custom-style>
+        
+        
 		<!--<asset-db></asset-db>-->
 		<app-location route="{{route}}" path="{{path}}"></app-location>
 		
         <app-route route="{{route}}" pattern="/:view/:id" data="{{routeData}}" active="{{routeActive}}" tail="routeTail"></app-route>
         
         
+        <app-header-layout fullbleed>
+
+            <app-header slot="header">
+                <app-toolbar>
+                    <paper-icon-button icon="menu" drawer-toggle on-click="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
+                    <div main-title><span class="title">ATMCash Explorer | </span><span class="page-view-title">{{routeData.view}}</span></div>
+                    
+                    <div class="search-container">
+                        <iron-icon icon="search" on-tap="_search"></iron-icon>
+                        <iron-input bind-value="{{searchValue}}">
+                            <input value="{{value::input}}" id="searchInput" placeholder="Search" on-keydown="_searchKeypress">
+                        </iron-input>
+                        
+                        <!--<paper-input></paper-input>-->
+                        <!--<paper-input-container class="search-container">
+                            <paper-icon-button prefix icon="search" on-tap="_search"></paper-icon-button>
+                            <label slot="label">Search</label>
+                            <iron-input slot="input">
+                                <input id="searchInput" on-keydown="_searchKeypress" placeholder="Search">
+                            </iron-input>
+                        </paper-input-container>-->
+                    </div>
+                    <!--<paper-input class="main-search" label="Search" id="searchInput" on-keydown="_searchKeypress">
+<paper-icon-button suffix icon="search" on-tap="_search"></paper-icon-button>
+<input is="iron-input">
+</paper-input>-->   
+                    <paper-icon-button icon="refresh"></paper-icon-button>
+                    
+                </app-toolbar>
+            </app-header>
+
+            <app-drawer-layout >
+
+                <app-drawer swipe-open slot="drawer" id="appdrawer">
+                    <app-header-layout has-scrolling-region>
+
+                        <app-header fixed slot="header">
+                            <app-toolbar>
+                                <div main-title>ATMCash Explorer</div>
+                            </app-toolbar>
+                        </app-header>
+
+                        <paper-listbox>
+                            <paper-item>
+                                <paper-ripple></paper-ripple>
+                                <a href="/richlist/1" style="display: block;">Richlist</a>
+                            </paper-item>
+                            
+                            
+                        </paper-listbox>
+                        
+                        <all-assets page-size=10 route="{{route}}">
+                            <paper-icon-button icon="fullscreen" onclick="allAssets.open()"></paper-icon-button>
+                        </all-assets>
+
+                    </app-header-layout>
+                </app-drawer>
+
+                <div main id="main-body">
+                    <!-- All assets dialogue -->
+                    <paper-dialog id="allAssets" with-backdrop>
+                        <paper-dialog-scrollable style="margin:0; padding:0;">
+                            <all-assets full="true" route="{{route}}"></all-assets>
+                        </paper-dialog-scrollable>
+
+                        <div class="buttons">
+                            <paper-button dialog-confirm autofocus>
+                                <paper-ripple></paper-ripple>
+                                Close
+                            </paper-button>
+                        </div>
+                    </paper-dialog>
+
+
+                    <div>
+                        <template is="dom-if" if="{{routeActive}}">
+                            <!--<paper-progress indeterminate class="blue" active="{{lazyLoading}}" style="width:100%;"></paper-progress>-->
+                            
+                            <iron-lazy-pages selected="[[routeData.view]]" attr-for-selected="view" loading="{{lazyLoading}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                                <!--<iron-pages >-->
+                                <template is="dom-if" view="search" restamp>
+                                    <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
+                                </template>
+                                <template is="dom-if" view="asset" restamp>
+                                    <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
+                                </template>
+                                <template is="dom-if" view="account">
+                                    <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
+                                </template>
+                                <template is="dom-if" view="transaction" restamp>
+                                    <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
+                                </template>
+                                <template is="dom-if" view="block">
+                                    <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
+                                </template>
+                                <template is="dom-if" view="store">
+                                    <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
+                                </template>
+                                <template is="dom-if" view="richlist" restamp>
+                                    <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
+                                </template>
+                                <!--</iron-pages>-->
+                            </iron-lazy-pages>
+                        </template>
+                    </div>
+                </div>
+
+            </app-drawer-layout>
+
+
+
+        </app-header-layout>
         
         
-        
-		<!-- drawer-width="160px"-->
+		
+		<!--<div>{{greeting}}</div>-->
+	</template>
+	<script src="app.js"></script>
+</dom-module>
+
+
+
+
+<script>
+/*
+<!-- drawer-width="160px"-->
 		<paper-drawer-panel>
 			<!-- Drawer -->
 			<paper-header-panel fixed drawer>
-				
+
 				<paper-toolbar>
 					<span class="title">EXPLORE</span>
-				</paper-toolbar>
-				
+    </paper-toolbar>
+
 				<div class="layout vertical" style="height: 100%">
-					
-					<paper-menu>
+
+					<paper-listbox>
 						<!--<paper-item>
 							<paper-ripple></paper-ripple>
 							<a style="display:block" href="/asset/">Assets</a>
-						</paper-item>
+    </paper-item>
 
 						<paper-item>
 							<paper-ripple></paper-ripple>
 							<a style="display:block" href="/store/">Store</a>
-						</paper-item>-->
-                        
+    </paper-item>-->
+
                         <paper-item>
                             <paper-ripple></paper-ripple>
                             <a href="/richlist/1">Richlist</a>
-                        </paper-item>
-					</paper-menu>
+    </paper-item>
+    </paper-listbox>
 
 					<!--<div class="flex"></div>-->
-					
+
 					<all-assets page-size=10 route="{{route}}">
 						<paper-icon-button icon="fullscreen" onclick="allAssets.open()"></paper-icon-button>
-					</all-assets>
+    </all-assets>
 
-					
-				</div>
 
-			</paper-header-panel>
+    </div>
+
+    </paper-header-panel>
 
 			<!-- Main page area -->
 			<paper-header-panel main>
-				
-				
-				
-				
+
+
+
+
 				<!-- All assets dialogue -->
-				
-				
+
+
 				<paper-dialog id="allAssets" with-backdrop>
                     <paper-dialog-scrollable style="margin:0; padding:0;">
-                        <all-assets full=true route="{{route}}"></all-assets>
-                    </paper-dialog-scrollable>
-					
+                        <all-assets full="true" route="{{route}}"></all-assets>
+    </paper-dialog-scrollable>
+
 					<div class="buttons">
 						<paper-button dialog-confirm autofocus>
 							<paper-ripple></paper-ripple>
 							Close
-						</paper-button>
-					</div>
-				</paper-dialog>
-				
-				
-				
-				
-				
-				
+    </paper-button>
+    </div>
+    </paper-dialog>
+
+
+
+
+
+
 				<paper-toolbar>
 					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
 					<span class="title"><!--Burst explorer--></span>
@@ -163,13 +325,13 @@
                     <paper-input-container class="search-container">
                         <paper-icon-button prefix icon="search" on-tap="_search"></paper-icon-button>
                         <input is="iron-input" id="searchInput" on-keydown="_searchKeypress" placeholder="Search">
-                    </paper-input-container>
+    </paper-input-container>
 					<!--<paper-input class="main-search" label="Search" id="searchInput" on-keydown="_searchKeypress">
 						<paper-icon-button suffix icon="search" on-tap="_search"></paper-icon-button>
 						<input is="iron-input">
-					</paper-input>-->
+    </paper-input>-->
 					<paper-icon-button icon="refresh"></paper-icon-button>
-				</paper-toolbar>
+    </paper-toolbar>
 
 				<div>
                     <template is="dom-if" if="{{routeActive}}">
@@ -178,35 +340,34 @@
                             <paper-progress indeterminate class="blue"  active="{{lazyLoading}}" style="width:100%;"></paper-progress>
                             <template is="iron-lazy-page" name="search">
                                 <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
-                            </template>
+    </template>
                             <template is="iron-lazy-page" name="asset">
                                 <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
-                            </template>
+    </template>
                             <template is="iron-lazy-page" name="account">
                                 <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
-                            </template>
+    </template>
                             <template is="iron-lazy-page" name="transaction">
                                 <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
-                            </template>
+    </template>
                             <template is="iron-lazy-page" name="block">
                                 <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
-                            </template>
+    </template>
                             <template is="iron-lazy-page" name="store">
                                 <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
-                            </template>
+    </template>
                             <template is="iron-lazy-page" name="richlist">
                                 <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
-                            </template>
+    </template>
                         <!--</iron-pages>-->
-                        </neon-lazy-pages>
-                    </template>
-                    
-					
-				</div>
+    </neon-lazy-pages>
+    </template>
 
-			</paper-header-panel>
-		</paper-drawer-panel>
-		<!--<div>{{greeting}}</div>-->
-	</template>
-	<script src="app.js"></script>
-</dom-module>
+
+    </div>
+
+    </paper-header-panel>
+    </paper-drawer-panel>
+    
+    */
+</script>
