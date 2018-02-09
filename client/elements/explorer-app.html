@@ -140,6 +140,8 @@
                             <input value="{{value::input}}" id="searchInput" placeholder="Search" on-keydown="_searchKeypress">
                         </iron-input>
                         
+                        
+                        
                         <!--<paper-input></paper-input>-->
                         <!--<paper-input-container class="search-container">
                             <paper-icon-button prefix icon="search" on-tap="_search"></paper-icon-button>
@@ -202,36 +204,29 @@
 
 
                     <div>
-                        <template is="dom-if" if="{{routeActive}}">
-                            <!--<paper-progress indeterminate class="blue" active="{{lazyLoading}}" style="width:100%;"></paper-progress>-->
-                            
-                            <iron-lazy-pages selected="[[routeData.view]]" attr-for-selected="view" loading="{{lazyLoading}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
-                                <!--<iron-pages >-->
-                                <template is="dom-if" view="search" restamp>
-                                    <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
-                                </template>
-                                <template is="dom-if" view="asset" restamp>
-                                    <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
-                                </template>
-                                <template is="dom-if" view="account">
-                                    <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
-                                </template>
-                                <template is="dom-if" view="transaction" restamp>
-                                    <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
-                                </template>
-                                <template is="dom-if" view="block">
-                                    <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
-                                </template>
-                                <template is="dom-if" view="store">
-                                    <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
-                                </template>
-                                <template is="dom-if" view="richlist" restamp>
-                                    <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
-                                </template>
-                                <!--</iron-pages>-->
-                            </iron-lazy-pages>
+                        <template is="dom-if" if="{{equal(routeData.view, 'search')}}">
+                            <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
+                        </template>
+                        <template is="dom-if" if="{{equal(routeData.view, 'asset')}}">
+                            <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
+                        </template>
+                        <template is="dom-if" if="{{equal(routeData.view, 'account')}}">
+                            <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
+                        </template>
+                        <template is="dom-if" if="{{equal(routeData.view, 'transaction')}}">
+                            <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
+                        </template>
+                        <template is="dom-if" if="{{equal(routeData.view, 'block')}}">
+                            <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
+                        </template>
+                        <template is="dom-if" if="{{equal(routeData.view, 'store')}}">
+                            <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
+                        </template>
+                        <template is="dom-if" if="{{equal(routeData.view, 'richlist')}}">
+                            <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
                         </template>
                     </div>
+                    
                 </div>
 
             </app-drawer-layout>
@@ -368,6 +363,37 @@
 
     </paper-header-panel>
     </paper-drawer-panel>
+    
+    
+    <template is="dom-if" if="{{routeActive}}">
+                            <!--<paper-progress indeterminate class="blue" active="{{lazyLoading}}" style="width:100%;"></paper-progress>-->
+
+                            <iron-lazy-pages selected="{{routeData.view}}" attr-for-selected="view" loading="{{lazyLoading}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                                <!--<iron-pages >-->
+                                <template is="dom-if" view="search" restamp>
+                                    <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
+    </template>
+                                <template is="dom-if" view="asset" restamp>
+                                    <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
+    </template>
+                                <template is="dom-if" view="account">
+                                    <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
+    </template>
+                                <template is="dom-if" view="transaction" restamp>
+                                    <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
+    </template>
+                                <template is="dom-if" view="block">
+                                    <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
+    </template>
+                                <template is="dom-if" view="store">
+                                    <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
+    </template>
+                                <template is="dom-if" view="richlist" restamp>
+                                    <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
+    </template>
+                                <!--</iron-pages>-->
+    </iron-lazy-pages>
+    </template>
     
     */
 </script>

@@ -23,7 +23,6 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "vaadin-grid": "^4.0.0",
     "linkifyjs": "^2.1.5",
-    "iron-lazy-pages": "^2.1.1",
     "paper-dialog": "^2.0.0",
     "paper-dialog-scrollable": "^2.0.0",
     "paper-header-panel": "^2.0.0",

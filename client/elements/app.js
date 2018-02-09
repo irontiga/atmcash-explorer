@@ -32,6 +32,10 @@ class ExplorerApp extends Polymer.Element{
         ]
     }
     
+    equal(one, two){
+        return one == two;
+    }
+    
     connectedCallback() {
         super.connectedCallback();
         //console.log('my-element created!');
@@ -68,12 +72,12 @@ class ExplorerApp extends Polymer.Element{
     ready() {
         super.ready();
         //this.fire('iron-signal', {name: 'track-page', data: { path: "/about.html" } });
-        this.dispatchEvent(new CustomEvent('iron-signal', {
+        /*this.dispatchEvent(new CustomEvent('iron-signal', {
             name: 'track-page',
             data: { 
                 path: "/about.html" 
             }
-        }));
+        }));*/
     }
 }
 
