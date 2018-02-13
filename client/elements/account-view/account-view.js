@@ -21,7 +21,18 @@ var accountView = Polymer({
 			computed: "_aliasSource(id)"
 		}
 	},
+    observers: [
+        "_observeID(id)"
+    ],
+
+    equal(one, two){ 
+        return one == two;
+    },
 	
+    _observeID(id){
+        //console.log(id);
+    },
+    
 	_format: function(num){
 		return num.toLocaleString();
 	},
@@ -52,8 +63,7 @@ var accountView = Polymer({
 	},
 	
 	_accountAssetChanges: function(change){
-		console.log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-		console.log(change);
+        //
 	},
 	
 	_objKey(object, key){

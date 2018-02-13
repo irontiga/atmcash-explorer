@@ -19,7 +19,7 @@ Polymer({
         this.searchResults = [];
         search = this.search;
         
-        // If it's a number it's either an account, a transaction, an asset, or a block / height
+        // If it's a number it's either an account ID, a transaction, an asset ID, or a block ID / height
         if(!isNaN(search)){
             
             // Check transaction

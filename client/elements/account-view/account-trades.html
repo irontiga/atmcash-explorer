@@ -2,6 +2,15 @@
 	<template>
 		<style include="app-styles">
 		</style>
+        
+        <vaadin-grid id="accountTradesGrid" aria-label="Trades" data-provider="{{accountTradesProvider}}" size="{{account.totalTrades}}">
+            <vaadin-grid-column>
+                <template class="header">Time</template>
+                <template>
+                    {{_time(item.timestamp)}} (<a href="/block/{{item.block}}">{{_format(item.height)}}</a>)
+                </template>
+            </vaadin-grid-column>
+        </vaadin-grid>
 		
 		<!--<paper-datatable-card id="accountTradesCard" header="Trades" data-source="{{accountTradesSource}}" progress page-size="5" page-size-options='[5, 10,20,50]'>
 			<div toolbar-main>
@@ -50,6 +59,8 @@
 		</paper-datatable-card>-->
 	</template>
 	<script>
+        const tradesDB  = new PouchDB(DB_URL + '/transactions');
+        
 		Polymer({
 			is: "account-trades",
 
@@ -162,11 +173,43 @@
 				//this.$.accountTradesCard.firstPage();
 			},
 
-			ready: function(){
-				setInterval(function(){
-					//this.$.accountTradesCard.retrieveVisibleData();
-				}.bind(this),60 * 1000)
-			}
+            ready: function(){
+                setInterval(function(){
+                    //this.$.transactionsCard.retrieveVisibleData();
+                }.bind(this),60 * 1000);
+
+                const ID = this.id;
+
+                this.accountTradesProvider = (params, callback) => {
+                    var options = {
+                        selector: {
+                            $or: [
+                                {seller: ID},
+                                {buyer: ID}
+                            ]
+                        },
+                        //fields:["_id", "timestamp", "sender", "senderRS","recipient", "recipientRS", "block", "ecBlockHeight", "amountNQT", "type", "subtype"],
+                        skip: params.pageSize*(params.page),
+                        limit: params.pageSize
+                    }
+
+                    //console.log(options);
+                    tradesDB.find(options)
+                        .then(function(response){
+                        //console.log(response);
+                        var docs = response.docs.map(function(trade){
+                            return trade;
+                        });
+                        console.log(response)
+                        callback(docs);
+                    })
+                        .catch(err => {
+                        console.log(err);
+                    })
+                };
+
+
+            }
 		});
 	</script>
 </dom-module>

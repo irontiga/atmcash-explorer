@@ -168,12 +168,12 @@
                 const filtering = params.filters.length != 0 && params.filters[0].value != "";
                 
                 if(filtering){
-                    console.log(params.filters);
+                    //console.log(params.filters);
                     const expression = "(?i)" + params.filters[0].value;
                     options.selector["$or"] = [
-                        {"_id": {"$regex": expression}},
-                        {"name": {"$regex": expression}},
-                        {"accountRS": {"$regex": expression}}
+                        //{"_id": {"$regex": expression}},
+                        {"name": {"$regex": expression}}//,
+                        //{"accountRS": {"$regex": expression}}
                     ]
                 }
                 else{
@@ -184,7 +184,7 @@
                 
                 accountsDB.find(options)
                     .then(function(response){
-                    console.log(JSON.stringify(response));
+                    //console.log(JSON.stringify(response));
                     var docs = response.docs.map(function(account){
                         if(!("name" in account) || account.name == ""){
                             account.name= {
@@ -204,7 +204,7 @@
                     if(filtering){
                         this.size = docs.length;
                     }
-                    console.log(docs);
+                    //console.log(docs);
                     callback(docs);
                 }.bind(this))
                     .catch(err => {

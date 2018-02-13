@@ -23,9 +23,9 @@
 				font-weight:300;
 			}
 			.asset-top-bar{
-				padding: 20px 0 5px 0;
+				padding: 20px 0 15px 0;
                 display: flex;
-                overflow-y:auto;
+                overflow-y:auto
 			}
 			.no-margin, h2.no-margin{
 				margin:0;
@@ -74,36 +74,38 @@
             
             <div class="xs12 s12 m12">
                 <paper-card>
-                    <div class="card-content">
-                        <div class="asset-top-bar">
-                            <div class="volume-div">
-                                <h4>{{asset._id}}</h4>
-                                <br>
-                                <h2 class="no-margin">
-                                    {{asset.name}}
-                                </h2>
-                                <small>Issued {{_issueTime(asset.issuingTransaction.timestamp)}}</small>
-                            </div>
-                            <span class="flex"></span>
-                            <div class="volume-div">
-                                <h5>Daily Volume</h5>
-                                <h4>
-                                    {{_format(asset.dailyVolume)}}
-                                </h4>
-                            </div>
-                            <div class="volume-div">
-                                <h5>Weekly Volume</h5>
-                                <h4>
-                                    {{_format(asset.weeklyVolume)}}
-                                </h4>
-                            </div>
-                            <div class="volume-div">
-                                <h5>Monthly Volume</h5>
-                                <h4>
-                                    {{_format(asset.monthlyVolume)}}
-                                </h4>
-                            </div>
+                    <div class="asset-top-bar">
+                        <div class="volume-div">
+                            <h4>{{asset._id}}</h4>
+                            <br>
+                            <h2 class="no-margin">
+                                {{asset.name}}
+                            </h2>
+                            <small>Issued {{_issueTime(asset.issuingTransaction.timestamp)}}</small>
                         </div>
+                        <span class="flex"></span>
+                        <div class="volume-div">
+                            <h5>Daily Volume</h5>
+                            <h4>
+                                {{_format(asset.dailyVolume)}}
+                            </h4>
+                        </div>
+                        <div class="volume-div">
+                            <h5>Weekly Volume</h5>
+                            <h4>
+                                {{_format(asset.weeklyVolume)}}
+                            </h4>
+                        </div>
+                        <div class="volume-div">
+                            <h5>Monthly Volume</h5>
+                            <h4>
+                                {{_format(asset.monthlyVolume)}}
+                            </h4>
+                        </div>
+                    </div>
+                    
+                    <div class="card-content">
+                        
                         <my-asset-chart asset="{{asset}}" trades="{{trades}}" id="{{id}}" ></my-asset-chart>
 
                         <iron-grid class="gapped">

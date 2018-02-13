@@ -3,13 +3,13 @@
 		<custom-style>
             <style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
                 :host > * {
-                    --primary-text-color: var(--paper-grey-800);
+                    --primary-text-color: rgba(0,0,0,0.87);
                     --primary-background-color: #fff;
-                    --secondary-text-color: #737373;
-                    --disabled-text-color: #9b9b9b;
+                    --secondary-text-color: rgba(0,0,0,0.54);
+                    --disabled-text-color: rgba(0,0,0,0.38);
                     --divider-color: #dbdbdb;
                     --primary-color: var(--paper-blue-grey-700);
-                    --light-primary-color: var(--paper-blue-grey-100);
+                    --light-primary-color: var(--paper-blue-grey-500);
                     --dark-primary-color: var(--paper-blue-grey-900);
                     --accent-color: var(--paper-cyan-600);
                     --light-accent-color: var(--paper-cyan-300);
@@ -21,7 +21,7 @@
                     --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
                     /* paper-menu */
                     --paper-menu-background-color: #fff;
-                    --menu-link-color: #333;
+                    --menu-link-color: rgba(0,0,0,0.8);
 
                     @apply(--paper-font-common-base);
 
@@ -30,6 +30,25 @@
                     --paper-progress-active-color: var(--accent-color);
 
                     font-family: "Roboto", sans-serif;
+
+                    --alt-primary-text-color: rgba(255,255,255, 1);
+                    --alt-secondary-text-color: rgba(255,255,255, 0.7);
+                }
+
+                .text-primary{
+                    color: var(--primary-text-color);
+                }
+                .text-secondary{
+                    color: var(--secondary-text-color);
+                }
+                .alt-text-primary{
+                    color: var(--alt-primary-text-color);
+                }
+                .alt-text-secondary{
+                    color: var(--alt-secondary-text-color);
+                }
+                .thin-text{
+                    font-weight: 100;
                 }
 
                 *{
@@ -39,6 +58,8 @@
                 p, h1, h2, h3, h4, h5, h6, span, th, tr {
                     color:var(--primary-text-color);
                     background:transparent;
+                }
+                h1, h2, h3, h4, h5, h6{
                     font-family: "Roboto Mono", monospace;
                 }
                 h3{
@@ -188,7 +209,7 @@
 
                 hr{
                     border: 0;
-                    border-top: 1px solidvar(--divider-color);
+                    border-top: 1px solid var(--divider-color);
                 }
                 p{
                     font-size:14px;
@@ -227,6 +248,8 @@
                 }
                 vaadin-grid{
                     background:transparent;
+                    --iron-icon-height: 14px;
+                    --iron-icon-width: 14px;
                 }
                 
             </style>

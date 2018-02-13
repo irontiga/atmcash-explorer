@@ -50,6 +50,7 @@
     "iron-grid": "*",
     "paper-icon-button": "^2.1.0",
     "iron-input": "^2.0.1",
-    "pouchdb": "^6.4.3"
+    "pouchdb": "^6.4.3",
+    "paper-tooltip": "^2.0.1"
   }
 }

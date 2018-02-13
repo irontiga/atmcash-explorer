@@ -54,6 +54,30 @@ function newAccInfo(accID){
 		requestType: "getAccount",
 		account: accID
 	})
+        // Transaction count
+        .then(accInfo => {
+        //console.log(accInfo);
+        return burstApi({
+            requestType: "getAccountTransactionIds",
+            account: accID
+        })
+            .then(transactionIds => {
+            accInfo.totalTransactions = transactionIds.transactionIds.length;
+            return Promise.resolve(accInfo);
+        })
+        // Trade count
+        .then(accInfo => {
+            return burstApi({
+                requestType: "getTrades",
+                account: accID
+            })
+                .then(trades => {
+                accInfo.totalTrades = trades.trades.length;
+                return Promise.resolve(accInfo);
+            })
+        })
+
+    })
 		.then(accInfo => {
 		//console.log(accInfo.account);
 		if("errorCode" in accInfo){

@@ -5,37 +5,51 @@
 			table{
 				background: transparent;
 			}
+            vaadin-grid{
+                border:0;
+                max-height: 240px;
+            }
 		</style>
+        
+        <vaadin-grid id="accountAssetsGrid" aria-label="Assets" items="{{assetBalances}}">
+            <!-- data-provider="[[assetAccountsProvider]]" size="{{totalAssetAccounts}}"-->
+            <vaadin-grid-column>
+                <template class="header">
+                    Asset
+                </template>
+                <template>
+                    <a href="/asset/{{item.asset}}">{{item.name}}</a>
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">
+                    Balance
+                </template>
+                <template>
+                    {{_assetBalance(item.balanceQNT, item.decimals, item.quantityQNT)}}
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">
+                    Highest bid
+                </template>
+                <template>
+                    {{_assetValue(item.balanceQNT, item.highestBid.priceNQT)}}
+                </template>
+            </vaadin-grid-column>
+            <vaadin-grid-column>
+                <template class="header">
+                    Month volume
+                </template>
+                <template>
+                    {{_format(item.monthlyVolume)}}
+                </template>
+            </vaadin-grid-column>
+        </vaadin-grid>
 			
-		<table class="paper-table">
-			<thead>
-				<tr>
-					<th>Asset</th>
-					<th>Balance</th>
-					<th>Highest bid</th>
-					<th>Value</th>
-					<th>Month volume</th>
-				</tr>
-			</thead>
-			<tbody>
-				<template is="dom-repeat" items="{{assetBalances}}">
-					<tr>
-						<!--<app-pouchdb-document
-id="asset-{{index}}"
-db-name="assets" 
-doc-id="{{item.asset}}" 
-log="true",
-data="{{item.assetInfo}}"
-></app-pouchdb-document>-->
-						<td><a href="/asset/{{item.asset}}">{{item.name}}</a></td>
-						<td>{{_assetBalance(item.balanceQNT, item.decimals, item.quantityQNT)}}</td>
-						<td>{{_assetPrice(item.highestBid.priceNQT, item.decimals)}}</td>
-						<td>{{_assetValue(item.balanceQNT, item.highestBid.priceNQT)}}</td>
-						<td>{{_format(item.monthlyVolume)}}</td>
-					</tr>
-				</template>
-			</tbody>
-		</table>
+		
 		
 	</template>
 	

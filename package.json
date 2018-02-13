@@ -1,7 +1,7 @@
 {
-	"name": "burst-asset-explorer",
+	"name": "atmcash-explorer",
 	"version": "1.0.0",
-	"description": "Burst assets",
+	"description": "ATMCash assets",
 	"main": "server/server.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
@@ -10,25 +10,28 @@
 		"crons": "node server/blockCrons/run.js",
 		"first-crons": "node server/blockCrons/run.js firstrun",
 		"vulcanize-windows": "vulcanize -p %cd% --inline-scripts --inline-css client/index.html > client/build.html",
-		"vulcanize-linux": "",
+		"vulcanize-linux": "polymer-bundler client/index.html > client/build.html --inline-scripts --inline-css --rewrite-urls-in-templates",
 		"update-trades": "node server/individualUpdates/updateTrades.js",
 		"update-accounts": "node server/individualUpdates/updateAccounts.js",
 		"update-assets": "node server/individualUpdates/updateAssets.js"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/burst-team/asset-explorer.git"
+		"url": "git+https://github.com/irontiga/atmcash-explorer.git"
 	},
 	"author": "irontiga",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/burst-team/asset-explorer/issues"
+		"url": "https://github.com/irontiga/atmcash-explorer/issues"
 	},
-	"homepage": "https://github.com/burst-team/asset-explorer#readme",
+	"homepage": "https://github.com/irontiga/atmcash-explorer#readme",
 	"dependencies": {
 		"hapi": "^15.1.1",
 		"inert": "^4.0.2",
 		"pouchdb": "^6.0.6",
 		"pouchdb-find": "^0.10.3"
+	},
+	"devDependencies": {
+		"eslint": "^4.17.0"
 	}
 }

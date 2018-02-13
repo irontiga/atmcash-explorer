@@ -58,7 +58,7 @@ function eachBlock(firstrun){
 		block.transactions.forEach(tx => {
 			tx._id = tx.transaction;
 			delete tx.transaction;
-			
+			delete tx.confirmations;
 			//console.log(tx);
 			///* No need for tx.'s in DB
 			blockPromises.push(
@@ -213,14 +213,16 @@ function eachBlock(firstrun){
 			.then(response => {
 			console.log(response);
 			// Don't need trades in db
-			/*if(!firstrun){
+			///*
+            if(!firstrun){
 				return assetTrades();
-			}*/
-			return Promise.resolve("Skip trades");
+			}
+            //*/
+			//return Promise.resolve("Skip trades");
 		})
 			.then(response => {
 			console.log("Almost done");
-			console.log(response);
+			//console.log(response);
 			// Don't need to store transactions with block
 			//block.transactions = transactionsForBlock;
 			block._id = block.block;

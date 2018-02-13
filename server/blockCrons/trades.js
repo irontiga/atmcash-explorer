@@ -43,7 +43,7 @@ function updateTrades(){
 		}
 		
 		trades = trades.trades;
-		console.log(trades);
+		//console.log(trades);
 		if(trades.length == 0){
 			return Promise.resolve("No new trades");
 		}
@@ -57,7 +57,7 @@ function updateTrades(){
 			return assetTradesDB.put(trade)
 			.catch(err => {
 				console.log("trade put err");
-				console.log(err);
+				//console.log(err);
 				if(err.error == 'conflict'){
 					return Promise.resolve(err);
 				}

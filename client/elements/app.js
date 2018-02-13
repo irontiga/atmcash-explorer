@@ -1,5 +1,5 @@
 class ExplorerApp extends Polymer.Element{
-    static get is() { return 'explorer-app'; }
+    static get is() { return "explorer-app"; }
     
     constructor() {
         super();
@@ -22,14 +22,26 @@ class ExplorerApp extends Polymer.Element{
             lastRoute: {
                 type: String,
                 value: ""
+            },
+            block: {
+                type: Object,
+                value: {
+                    height: 0
+                }
+            },
+            blockRequestParams: {
+                type: Object,
+                value: {
+                    requestType: "getBlock"
+                }
             }
-        }
+        };
     }
     
     static get observers() {
         return [
-            '_routeChanged(route.path)'
-        ]
+            "_routeChanged(route.path)"
+        ];
     }
     
     equal(one, two){
@@ -78,10 +90,15 @@ class ExplorerApp extends Polymer.Element{
                 path: "/about.html" 
             }
         }));*/
+        const blockRequest = this.shadowRoot.querySelector("#blockRequest");
+        // Check new block.....every 3 seconds?
+        setInterval(function(){
+            blockRequest.generateRequest();
+        }.bind(this), 3000);
     }
 }
 
-customElements.define('explorer-app', ExplorerApp);
+customElements.define("explorer-app", ExplorerApp);
 /*
 var app = Polymer({
 	is: "explorer-app",

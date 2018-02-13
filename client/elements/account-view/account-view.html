@@ -11,19 +11,25 @@
 				max-height: 300px;
 			}
 			.name{
-				font-size:20px;
-				line-height:30px;
+				font-size:22px;
+                line-height:30px;
+                font-family: "Roboto Mono", monospace;
+                
 			}
 			.balance{
-				font-family: Roboto;
 				font-weight:100;
-				font-size:80px;
+				font-size:44px;
+                line-height:44px;
+                font-family: "Roboto Mono", monospace;
 			}
+            .balance .currency{
+                font-size:18px;
+            }
 			.thin{
 				font-weight:100;
 			}
 			h3{
-				font-family: Roboto Mono;
+				font-family: "Roboto Mono", monospace;
 				font-weight:300;
 			}
 			.transactions-div{
@@ -36,6 +42,7 @@
 			
             .account-ids{
                 line-height:44px;
+                font-size:14px;
             }
 			paper-datatable-card#aliasCard{
 				--paper-datatable-top-toolbar{
@@ -45,23 +52,69 @@
 				--paper-datatable-top-toolbar-color:  green;
 				background-color:pink;
 			}
+            
+            vaadin-grid{
+                border:0;
+                max-height: 240px;
+            }
+            
+            #account-bar{
+                background: var(--light-primary-color);
+                padding:14px;
+                margin-bottom:6px;
+                @apply --shadow-elevation-4dp;
+                height: 76px;
+            }
+            .white-primary{
+                color: rgba(255,255,255,1);
+            }
+            .white-secondary{
+                color: rgba(255,255,255,0.7);
+            }
+            .right{
+                float: right;
+            }
 		</style>
 		<account-queries id="{{id}}" account="{{account}}" dburl="{{dburl}}" aliases="{{aliases}}"></account-queries>
 
-		<template is="dom-if" if="account.accountRS">
-            <iron-grid class="gapped">
+        <template is="dom-if" if="{{!equal(id, account._id)}}" restamp>
+            <paper-progress indeterminate class="blue" style="width:100%"></paper-progress>
+        </template>
 
+		<template is="dom-if" if="{{equal(id, account._id)}}" restamp>
+            
+            <div id="account-bar">
+                <div class="right">
+                    <span style="margin:0;" class="balance white-primary" id="balance">{{_formatNQT(account.balanceNQT)}}<!-- + unconfirmed amounts --><span class="currency white-primary">ATM</span></span> 
+                    <paper-tooltip for="balance">{{_formatNQT(account.balanceNQT)}}{{_NQTDecimals(account.balanceNQT)}} ATM</paper-tooltip>
+                    <br>
+                    <span class=" white-secondary">Mined: {{_formatNQT(account.forgedBalanceNQT)}} <small class="currency">ATM</small></span>
+                </div>
+                
+                
+                <span class="name white-secondary">{{account.name}}</span>
+                <br>
+                <span class="account-ids white-secondary">{{account.accountRS}} <b>/</b> {{account._id}}</span>
+            </div>
+            
+            <iron-grid class="gapped">
                 <div class="xs12 s12 m6">
                     <paper-card>
                         <div class="card-content">
-                            <span class="account-ids">{{account.accountRS}} / {{account.account}}</span>
                             <br>
-                            <span class="balance" id="balance"><span class="normal-weight">A</span> {{_formatNQT(account.balanceNQT)}}</span>
-                            <paper-tooltip for="balance">{{_formatNQT(account.balanceNQT)}} {{_NQTDecimals(account.balanceNQT)}}</paper-tooltip>
+                            <span class="balance" id="balance">{{_formatNQT(account.balanceNQT)}}<!-- + unconfirmed amounts --><span class="currency">ATM</span></span> 
+<!--                            <paper-tooltip for="balance">{{_formatNQT(account.balanceNQT)}}{{_NQTDecimals(account.balanceNQT)}} ATM</paper-tooltip>-->
                             <br>
                             <span class="name">{{account.name}}</span>
+                            <br>
+                            <span class="account-ids">{{account.accountRS}} / {{account._id}}</span>
                             <hr>
-                            <p>{{account.description}}</p>
+                            <p>
+                                {{account.description}}
+                                <template is="dom-if" if="{{!account.description}}">
+                                    <i>Account description not set</i>
+                                </template>
+                            </p>
                         </div>
                     </paper-card>
                 </div>
@@ -83,7 +136,28 @@
 
                                 <!-- ALIASES -->
                                 <div class="table-div">
-                                    <table class="paper-table">
+                                    <vaadin-grid id="accountAssetsGrid" aria-label="Assets" items="{{aliases.aliases}}">
+                                        <!-- data-provider="[[assetAccountsProvider]]" size="{{totalAssetAccounts}}"-->
+                                        <vaadin-grid-column>
+                                            <template class="header">
+                                                Alias
+                                            </template>
+                                            <template>
+                                                <a href="/alias/{{item.aliasName}}">{{item.aliasName}}</a>
+                                            </template>
+                                        </vaadin-grid-column>
+
+                                        <vaadin-grid-column>
+                                            <template class="header">
+                                                Data
+                                            </template>
+                                            <template>
+                                                <inner-html html="{{_aliasURI(item.aliasURI)}}"></inner-html>
+                                            </template>
+                                        </vaadin-grid-column>
+                                    </vaadin-grid>
+                                    
+                                    <!--<table class="paper-table">
                                         <thead>
                                             <tr>
                                                 <th>Alias</th>
@@ -98,7 +172,7 @@
                                                 </tr>
                                             </template>
                                         </tbody>
-                                    </table>
+                                    </table>-->
                                 </div>
                                 <!--<div>
 <paper-datatable-card id="aliasCard" data-source="{{aliasSource}}" progress page-size="5">
@@ -126,7 +200,7 @@
 
                 <div class="xs12 s12 m12">
                     <paper-card>
-                        <account-transactions id="{{id}}" route="{{route}}"></account-transactions>
+                        <account-transactions id="{{id}}" account="{{account}}" route="{{route}}" block="{{block}}"></account-transactions>
                     </paper-card>
                 </div>
 

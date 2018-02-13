@@ -13,6 +13,7 @@ Polymer({
     },
     
     ready: function(){
+        // BTC prices for all the currencies...
         var httpRequest = new XMLHttpRequest();
         // Responose
         httpRequest.onreadystatechange = function(){

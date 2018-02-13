@@ -113,7 +113,6 @@
                         display: none;
                     }
                 }
-                
                 .title{
                     font-weight: 100;
                 }
@@ -125,6 +124,13 @@
 		<app-location route="{{route}}" path="{{path}}"></app-location>
 		
         <app-route route="{{route}}" pattern="/:view/:id" data="{{routeData}}" active="{{routeActive}}" tail="routeTail"></app-route>
+        
+        <!-- Current block height (for calculating tx confirmations) -->
+        <burst-api
+                   id="blockRequest"
+                   params="{{blockRequestParams}}"
+                   response="{{block}}"
+                   ></burst-api>
         
         
         <app-header-layout fullbleed>
@@ -151,6 +157,7 @@
                             </iron-input>
                         </paper-input-container>-->
                     </div>
+                    <span class="alt-text-secondary thin-texttt"><iron-icon icon="view-agenda"></iron-icon> {{block.height}}</span>
                     <!--<paper-input class="main-search" label="Search" id="searchInput" on-keydown="_searchKeypress">
 <paper-icon-button suffix icon="search" on-tap="_search"></paper-icon-button>
 <input is="iron-input">
@@ -211,7 +218,7 @@
                             <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
                         </template>
                         <template is="dom-if" if="{{equal(routeData.view, 'account')}}">
-                            <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
+                            <account-view id="{{routeData.id}}" block="{{block}}" dburl="{{dburl}}" route="{{route}}"></account-view>
                         </template>
                         <template is="dom-if" if="{{equal(routeData.view, 'transaction')}}">
                             <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>

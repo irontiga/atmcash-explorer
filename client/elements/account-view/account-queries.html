@@ -62,16 +62,25 @@
 			},
             
             observers: [
-                "_accLoad(id)"
+                "_accLoad(id)",
+                "_accLoaded(account)"
             ],
             
+            _accLoaded(account){
+                if(this.account.accountRS && !this.account.name){
+                    this.account.name = this.account.accountRS;
+                }
+            },
+            
             _accLoad(id){
-                var options = {
+                
+                /*var options = {
                     selector: {account: id}
                 }
                 accountsDB.get(id).then( function(doc){
-                    this.account = doc
-                }.bind(this));
+                    this.account = doc;
+                    
+                }.bind(this));*/
             },
             
             _txSelector(id){

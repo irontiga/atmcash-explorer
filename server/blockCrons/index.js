@@ -14,9 +14,11 @@ const transactionsDB = new PouchDB(config.db.url + 'transactions', {
 const assetsDB = new PouchDB(config.db.url + 'assets', {
 	auth: config.db.auth
 });
-/*const assetTradesDB = new PouchDB(config.db.url + 'asset-trades', {
+///*
+const assetTradesDB = new PouchDB(config.db.url + 'asset-trades', {
 	auth: config.db.auth
-});*/
+});
+//*/
 const assetOrdersDB = new PouchDB(config.db.url + 'asset-orders', {
 	auth: config.db.auth
 });
@@ -49,7 +51,7 @@ function index(){
 	})
 	
 	// Trades
-    /*
+    ///*
 		.then(response => {
 		return assetTradesDB.createIndex({
 			index: {
@@ -64,7 +66,7 @@ function index(){
 			}
 		})
 	})
-    */
+    //*/
 	
 	// Assets
 	.then(response => {

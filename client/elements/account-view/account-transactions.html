@@ -1,189 +1,227 @@
 <dom-module id="account-transactions">
-	<template>
-		<style include="app-styles">
-		</style>
-		
-<!--
+    <template>
+        <style include="app-styles">
+        </style>
+
+        <!--
 		<burst-api
 				   params="{{_getTransactionParams(id)}}"
 				   response="{{transactions}}"
 				   ></burst-api>
 -->
-        <paper-card>
 
-            <!--   data-provider="{{accountTransactionsProvider}}" size="{{}}" -->
-            <vaadin-grid id="accountTransactionGrid" aria-label="Transactions" data-provider="{{accountTransactionsProvider}}" size="100">
-                <vaadin-grid-column>
-                    <template class="header">Time</template>
-                    <template>
-                        {{_time(item.timestamp)}}
-                    </template>
-                </vaadin-grid-column>
-                
-                <vaadin-grid-column>
-                    <template class="header">Transaction</template>
-                    <template>
+        <!--   data-provider="{{accountTransactionsProvider}}" size="{{account.totalTransactions}}" -->
+        <vaadin-grid id="accountTransactionGrid" aria-label="Transactions" data-provider="{{accountTransactionsProvider}}" size="{{account.totalTransactions}}">
+            <vaadin-grid-column>
+                <template class="header">Time</template>
+                <template>
+                    {{_time(item.timestamp)}} 
+                    (<a href="/block/{{item.block}}">{{_format(item.ecBlockHeight)}}</a>)
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">Transaction</template>
+                <template>
+                    <span>{{_txType(item.type, item.subtype)}}</span>
+                    <br>
+                    <small>
                         <a href="/transaction/{{item._id}}" on-tap="_tableClick">{{item._id}}</a>
-                    </template>
-                </vaadin-grid-column>
-                
-                <vaadin-grid-column>
-                    <template class="header">From</template>
-                    <template>
-                        <a href="/account/{{item.sender}}" on-tap="_tableClick">{{item.senderRS}}</a>
-                    </template>
-                </vaadin-grid-column>
-                
-                <vaadin-grid-column>
-                    <template class="header">Amount</template>
-                    <template>
-                        <span class$="{{_txColor(item.sender)}}">{{_formatNQT(item.amountNQT)}}<small class="thin">{{_NQTDecimals(item.amountNQT)}} <b>ATM</b></small></span>
-                    </template>
-                </vaadin-grid-column>
-                
-                <vaadin-grid-column>
-                    <template class="header">To</template>
-                    <template>
-                        <a href="/account/{{item.recipient}}" on-tap="_tableClick">{{item.recipientRS}}</a>
-                    </template>
-                </vaadin-grid-column>
-                
-                <vaadin-grid-column>
-                    <template class="header">Type</template>
-                    <template>
-                        <span>{{_txType(item.type, item.subtype)}}</span>
-                    </template>
-                </vaadin-grid-column>
-                
-                <vaadin-grid-column>
-                    <template class="header">Block height</template>
-                    <template>
-                        <a href="/block/{{item.block}}">{{_format(item.ecBlockHeight)}}</a>
-                    </template>
-                </vaadin-grid-column>
-            </vaadin-grid>
-        </paper-card>
-		
-	</template>
-	<script>
-        const transactionsDB  = new PouchDB(DB_URL + '/transactions');
-        
-		Polymer({
-			is: "account-transactions",
-			
-			properties: {
-				id: {
-					type: String,
-					observer: "_idObserver"
-				},
-				txSource: {
-					type: Object,
-					computed: "_txSource(id)"
-				},
-				route:{
-					notify: true
-				}
-			},
-			
-			_getTransactionParams: function(id){
-				return {
-					requestType: "getAccountTransactions",
-					lastIndex: 50,
-					account: id
-				};
-			},
-			
-			_refreshTx: function(){
-				this.$.transactionsCard.firstPage();
-				this.$.transactionsCard.retrieveVisibleData();
-			},
+                    </small>
+                </template>
+            </vaadin-grid-column>
 
-			_tableClick: function(e){
-				console.log(e);
-				//this.set('route.path', e.srcElement.href);
-			},
+            <vaadin-grid-column>
+                <template class="header">To/From</template>
+                <template>
+                    <template is="dom-if" if="{{!isOwner(item.sender)}}">
+                        <a href="/account/{{item.sender}}">{{item.senderRS}}</a>
+                    </template>
+                    <template is="dom-if" if="{{!isOwner(item.recipient)}}">
+                        <a href="/account/{{item.recipient}}">{{item.recipientRS}}</a>
+                    </template>
+                    <template is="dom-if" if="{{!item.recipient}}">
+                        Network
+                    </template>
+                </template>
+            </vaadin-grid-column>
 
-			_txColor: function(sender){
-				if(sender == this.id){
-					return "red-text";
-				}
-				return "green-text";
-			},
-			
-			_time: function(timestamp){
-				timestamp += 1407722400
-				var a = new Date(timestamp*1000);
-				var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-				var year = a.getFullYear();
-				var month = months[a.getMonth()];
-				var date = a.getDate();
-				var hour = a.getHours();
-				var min = a.getMinutes();
-				//var sec = a.getSeconds();
-				// Will display time in 10:30:23 format
-				var time = hour + ':' + min + ' ' + date + ' ' + month + ' ' + ' ' + year;
-				return time;
-			},
-			_txType: function(type, subtype){
-				//console.log(type +" "+ subtype)
-				return txTypes[type][subtype];
-			},
-			_format: function(num){
-				return num.toLocaleString();
-			},
+            <vaadin-grid-column>
+                <template class="header">Amount</template>
+                <template>
+                    <span class$="{{_txColor(item.sender)}}">
+                        <iron-icon icon="{{txIcon(item.sender)}}"></iron-icon> {{_formatNQT(item.amountNQT)}}
+                        <small class="thin">{{_NQTDecimals(item.amountNQT)}}
+                            <template is="dom-if" if="{{isOwner(item.sender)}}">
+                                + {{_formatNQT(item.feeNQT)}}
+                            </template>
+                            <b>ATM</b>
 
-			_formatNQT: function(num){
-				num =  parseFloat((num / 100000000).toFixed(0));
-				return num.toLocaleString();
-			},
-			_NQTDecimals: function(num){
-				return "." + (
-					parseFloat((num / 100000000).toFixed(0)) - parseFloat((num / 100000000).toFixed(8))
-				).toString().slice(-8);
-			},
-			
+                        </small>
+                    </span>
+                </template>
+            </vaadin-grid-column>
 
-			_idObserver: function(){
-				//this.$.transactionsCard.firstPage();
-			},
+            <vaadin-grid-column>
+                <template class="header">Confirmations</template>
+                <template>
+                    {{subtract(block.height, item.ecBlockHeight)}}
+                </template>
+            </vaadin-grid-column>
 
-			ready: function(){
-				setInterval(function(){
-					//this.$.transactionsCard.retrieveVisibleData();
-				}.bind(this),60 * 1000);
-                
+            <!--
+            <vaadin-grid-column>
+                <template class="header">To</template>
+                <template>
+                    <a href="/account/{{item.recipient}}" on-tap="_tableClick">{{item.recipientRS}}</a>
+                </template>
+            </vaadin-grid-column>
+-->
+
+            <!--
+            <vaadin-grid-column>
+                <template class="header">Type</template>
+                <template>
+                    <span>{{_txType(item.type, item.subtype)}}</span>
+                </template>
+            </vaadin-grid-column>
+-->
+
+            <!--
+            <vaadin-grid-column>
+                <template class="header">Block height</template>
+                <template>
+                    <a href="/block/{{item.block}}">{{_format(item.ecBlockHeight)}}</a>
+                </template>
+            </vaadin-grid-column>
+-->
+        </vaadin-grid>
+
+    </template>
+    <script>
+        const transactionsDB = new PouchDB(DB_URL + '/transactions');
+
+        Polymer({
+            is: "account-transactions",
+
+            properties: {
+                id: {
+                    type: String,
+                    observer: "_idObserver"
+                },
+                route: {
+                    notify: true
+                }
+            },
+
+            _getTransactionParams: function (id) {
+                return {
+                    requestType: "getAccountTransactions",
+                    lastIndex: 50,
+                    account: id
+                };
+            },
+
+            _refreshTx: function () {
+                this.$.transactionsCard.firstPage();
+                this.$.transactionsCard.retrieveVisibleData();
+            },
+
+            _tableClick: function (e) {
+                console.log(e);
+                //this.set('route.path', e.srcElement.href);
+            },
+
+            _txColor: function (sender) {
+                return sender == this.id ? "red-text" : "green-text";
+            },
+
+            txIcon: function (sender) {
+                return sender == this.id ? "remove-circle-outline" : "add-circle-outline"
+            },
+
+            isOwner: function (acc) {
+                return acc == this.id;
+            },
+
+            _time: function (timestamp) {
+                timestamp += 1407722400
+                var a = new Date(timestamp * 1000);
+                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                var year = a.getFullYear();
+                var month = months[a.getMonth()];
+                var date = a.getDate();
+                var hour = a.getHours();
+                var min = a.getMinutes();
+                //var sec = a.getSeconds();
+                // Will display time in 10:30:23 format
+                var time = hour + ':' + min + ' ' + date + ' ' + month + ' ' + ' ' + year;
+                return time;
+            },
+            _txType: function (type, subtype) {
+                //console.log(type +" "+ subtype)
+                return txTypes[type][subtype];
+            },
+            _format: function (num) {
+                return num.toLocaleString();
+            },
+
+            _formatNQT: function (num) {
+                num = parseFloat((num / 100000000).toFixed(0));
+                return num.toLocaleString();
+            },
+            _NQTDecimals: function (num) {
+                return "." + (
+                    parseFloat((num / 100000000).toFixed(0)) - parseFloat((num / 100000000).toFixed(8))
+                ).toString().slice(-8);
+            },
+
+            subtract(one, two) {
+                return one - two;
+            },
+
+            _idObserver: function () {
+                //this.$.transactionsCard.firstPage();
+            },
+
+            ready: function () {
+                setInterval(function () {
+                    //this.$.transactionsCard.retrieveVisibleData();
+                }.bind(this), 60 * 1000);
+
                 const ID = this.id;
-                
+
                 this.accountTransactionsProvider = (params, callback) => {
-                    var options = {
+
+                    const options = {
                         selector: {
                             $or: [
-                                {recipient: ID},
-                                {sender: ID}
+                                { recipient: ID },
+                                { sender: ID }
                             ]
                         },
-                        fields:["_id", "timestamp", "sender", "senderRS","recipient", "recipientRS", "block", "ecBlockHeight", "amountNQT", "type", "subtype"],
-                        skip: params.pageSize*(params.page),
+                        fields: ["_id", "timestamp", "sender", "senderRS", "recipient", "recipientRS", "block", "ecBlockHeight", "amountNQT", "type", "subtype", "feeNQT"],
+                        skip: params.pageSize * (params.page),
                         limit: params.pageSize
                     }
-                    
-                    console.log(options);
-                    transactionsDB.find(options)
-                        .then(function(response){
-                        console.log(response);
-                        var docs = response.docs.map(function(transaction){
-                            return transaction;
-                        });
-                        //console.log(docs)
-                        callback(docs);
-                    })
+
+                    //console.log(options);
+                    const txPromise = transactionsDB.find(options)
+                        .then(function (response) {
+                            //console.log(response);
+                            var docs = response.docs.map(function (transaction) {
+                                return transaction;
+                            });
+                            //console.log(docs)
+                            callback(docs);
+                        })
                         .catch(err => {
-                        console.log(err);
-                    })
+                            console.log(err);
+                        })
                 };
-                
-                    
+
+
             }
         });
-	</script>
+    </script>
 </dom-module>

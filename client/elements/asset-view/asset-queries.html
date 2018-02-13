@@ -117,7 +117,7 @@
 				//console.log("Updating all assets list");
 				setInterval(function(){
 					this.shadorwRoot.querySelector("#allAssetsQuery").refresh();
-				}, 200000);
+				}.bind(this), 200000);
 			}
 		});
 	</script>

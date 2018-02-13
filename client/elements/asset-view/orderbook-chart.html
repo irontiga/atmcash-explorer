@@ -21,7 +21,7 @@
 					return {
 						x: ask.price,
 						y: parseInt(ask.quantitySum.toFixed(0)),
-						sum: ask.quantitySum
+						sum: ask.sum
 					}
 				}.bind(this));
 				
@@ -29,7 +29,7 @@
 					return {
 						x: bid.price,
 						y: parseInt(bid.quantitySum.toFixed(0)),
-						sum: bid.quantitySum
+						sum: bid.sum
 					}
 				}.bind(this));
                 
@@ -44,6 +44,7 @@
                         height:"250px"
 					},
 					tooltip: {
+						headerFormat: '',
                         useHTML: true,
                         borderRadius: 0,
                         backgroundColor: "#fff",
