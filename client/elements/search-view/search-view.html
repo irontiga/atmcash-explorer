@@ -15,6 +15,9 @@
 
                             </thead>
                             <tbody>
+                                <template is="dom-if" if="{{noResults}}">
+                                    <tr><td>No results found.</td></tr>
+                                </template>
                                 <template is="dom-repeat" items="{{searchResults}}">
                                     <tr>
                                         <td><a href="{{item.url}}">{{item.text}}</a></td>

@@ -4,12 +4,62 @@
 		</style>
         
         <vaadin-grid id="accountTradesGrid" aria-label="Trades" data-provider="{{accountTradesProvider}}" size="{{account.totalTrades}}">
+
             <vaadin-grid-column>
                 <template class="header">Time</template>
                 <template>
                     {{_time(item.timestamp)}} (<a href="/block/{{item.block}}">{{_format(item.height)}}</a>)
                 </template>
             </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">Asset</template>
+                <template>
+                    <span>
+                        <a href="/asset/{{item.asset}}">{{item.name}}</a>
+                    </span>
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">Type</template>
+                <template>
+                    <span class$="{{_tradeColor(item.tradeType)}}">{{item.tradeType}}</span>
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">Price</template>
+                <template>
+                    {{_format(item.price)}} <small>ATM</small>
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">Amount</template>
+                <template>
+                    {{_format(item.amount)}}
+                    <small>{{item.name}}</small>
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">Total</template>
+                <template>
+                    {{_format(item.total)}}
+                    <small>ATM</small>
+                </template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+                <template class="header">Account</template>
+                <template>
+                    <span>
+                        <a href="/account/{{item.account.account}}">{{item.account.accountRS}}</a>
+                    </span>
+                </template>
+            </vaadin-grid-column>
+
         </vaadin-grid>
 		
 		<!--<paper-datatable-card id="accountTradesCard" header="Trades" data-source="{{accountTradesSource}}" progress page-size="5" page-size-options='[5, 10,20,50]'>
@@ -59,7 +109,7 @@
 		</paper-datatable-card>-->
 	</template>
 	<script>
-        const tradesDB  = new PouchDB(DB_URL + '/transactions');
+        const tradesDB  = new PouchDB(DB_URL + '/asset-trades');
         
 		Polymer({
 			is: "account-trades",
@@ -75,58 +125,6 @@
 				},
 				route:{
 					notify: true
-				}
-			},
-
-			_accountTradesSource: function(id){
-				return {
-					get: function(sort, page, pageSize){
-						// Promise
-						return new Promise(function(resolve, reject){
-							var httpRequest = new XMLHttpRequest();
-							// Responose
-							httpRequest.onreadystatechange = function(){
-								if (httpRequest.readyState === XMLHttpRequest.DONE) {
-									if (httpRequest.status === 200){
-
-										var result = JSON.parse(httpRequest.responseText);
-										var trades = result.trades.map(function(trade){
-											trade.name = {
-												name: trade.name,
-												asset: trade.asset
-											}
-											trade.price = trade.priceNQT / 100000000 * Math.pow(10, trade.decimals);
-											trade.amount = trade.quantityQNT / Math.pow(10, trade.decimals);
-											trade.total = trade.priceNQT * trade.quantityQNT / 100000000;
-											
-											if(trade.seller == this.id){
-												trade.account = {
-													account: trade.seller,
-													accountRS: trade.sellerRS
-												}
-											}else{
-												trade.account = {
-													account: trade.buyer,
-													accountRS: trade.buyerRS
-												}
-											}
-											
-											return trade;
-										})
-										
-										resolve(trades);
-									}
-								}
-							}.bind(this);
-
-							var mySize = pageSize;
-							httpRequest.open("GET", "http://127.0.0.1:8125/burst?requestType=getTrades&account="+this.id+"&firstIndex="+mySize*(page-1)+"&lastIndex="+(page*mySize-1));
-							httpRequest.send();
-						}.bind(this));
-					}.bind(this),
-					set: function(id, property, value){
-						console.info("Bleh");
-					}.bind(this)
 				}
 			},
 
@@ -179,16 +177,17 @@
                 }.bind(this),60 * 1000);
 
                 const ID = this.id;
+                console.log(ID);
 
                 this.accountTradesProvider = (params, callback) => {
                     var options = {
                         selector: {
                             $or: [
-                                {seller: ID},
-                                {buyer: ID}
+                                { seller: ID },
+                                { buyer: ID }
                             ]
                         },
-                        //fields:["_id", "timestamp", "sender", "senderRS","recipient", "recipientRS", "block", "ecBlockHeight", "amountNQT", "type", "subtype"],
+                        //fields:["_id", "timestamp", "seller", "buyer", "height", "asset", "name", "tradeType", "priceNQT", "decimals", "quantityQNT", "seller"],
                         skip: params.pageSize*(params.page),
                         limit: params.pageSize
                     }
@@ -196,11 +195,25 @@
                     //console.log(options);
                     tradesDB.find(options)
                         .then(function(response){
-                        //console.log(response);
-                        var docs = response.docs.map(function(trade){
+                        const docs = response.docs.map(function(trade){
+                            trade.price = trade.priceNQT / 100000000 * Math.pow(10, trade.decimals);
+                            trade.amount = trade.quantityQNT / Math.pow(10, trade.decimals);
+                            trade.total = trade.priceNQT * trade.quantityQNT / 100000000;
+
+                            if (trade.seller != ID) {
+                                trade.account = {
+                                    account: trade.seller,
+                                    accountRS: trade.sellerRS
+                                }
+                            } else {
+                                trade.account = {
+                                    account: trade.buyer,
+                                    accountRS: trade.buyerRS
+                                }
+                            }
                             return trade;
                         });
-                        console.log(response)
+                        console.log(docs)
                         callback(docs);
                     })
                         .catch(err => {
@@ -209,6 +222,58 @@
                 };
 
 
+            },
+            
+            _accountTradesSource: function (id) {
+                return {
+                    get: function (sort, page, pageSize) {
+                        // Promise
+                        return new Promise(function (resolve, reject) {
+                            var httpRequest = new XMLHttpRequest();
+                            // Responose
+                            httpRequest.onreadystatechange = function () {
+                                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                                    if (httpRequest.status === 200) {
+
+                                        var result = JSON.parse(httpRequest.responseText);
+                                        var trades = result.trades.map(function (trade) {
+                                            trade.name = {
+                                                name: trade.name,
+                                                asset: trade.asset
+                                            }
+                                            trade.price = trade.priceNQT / 100000000 * Math.pow(10, trade.decimals);
+                                            trade.amount = trade.quantityQNT / Math.pow(10, trade.decimals);
+                                            trade.total = trade.priceNQT * trade.quantityQNT / 100000000;
+
+                                            if (trade.seller == this.id) {
+                                                trade.account = {
+                                                    account: trade.seller,
+                                                    accountRS: trade.sellerRS
+                                                }
+                                            } else {
+                                                trade.account = {
+                                                    account: trade.buyer,
+                                                    accountRS: trade.buyerRS
+                                                }
+                                            }
+
+                                            return trade;
+                                        })
+
+                                        resolve(trades);
+                                    }
+                                }
+                            }.bind(this);
+
+                            var mySize = pageSize;
+                            httpRequest.open("GET", "http://127.0.0.1:8125/burst?requestType=getTrades&account=" + this.id + "&firstIndex=" + mySize * (page - 1) + "&lastIndex=" + (page * mySize - 1));
+                            httpRequest.send();
+                        }.bind(this));
+                    }.bind(this),
+                    set: function (id, property, value) {
+                        console.info("Bleh");
+                    }.bind(this)
+                }
             }
 		});
 	</script>

@@ -31,7 +31,7 @@ function updateTrades(){
 				requestType: "getAllTrades",
 				firstIndex: state.numberOfTrades - info.doc_count + 2 - 50, // -2 cause of indexes being counted as docs
 				lastIndex: state.numberOfTrades - info.doc_count + 2,
-				includeAssetInfo: false
+				includeAssetInfo: true
 			});
 		})
 	})

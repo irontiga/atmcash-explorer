@@ -6,22 +6,57 @@ Polymer({
 			type: "string",
 			value: "",
             observer: "_searchObserver"
-		},
+        },
+        block: {
+            observer: "_searchObserver"
+        },
+        searchResults: {
+            type: Array,
+            value: []
+        },
         loading: {
             type: Boolean,
             value: true
+        },
+        noResults: {
+            type: Boolean,
+            computed: "_noResults(searchResults, loading)"
         }
-	},
+    },
     
-    _searchObserver: function(search){
+    _noResults() {
+        return !(this.searchResults.length > 0 || this.loading);
+     },
+    
+    _searchObserver: function(){
+        const search = this.search;
         console.log(search);
         this.loading = true;
         this.searchResults = [];
-        search = this.search;
-        
+        // What the...?! ^
+
         // If it's a number it's either an account ID, a transaction, an asset ID, or a block ID / height
-        if(!isNaN(search)){
+        
+        if (/^\d+$/.test(search)) {
             
+            // To be an asset ID it MUST be a transaction also
+            //console.log(transactionsDB);
+            
+            if ((parseInt(search) <= this.block.height)) {
+                //console.log(blockDB);
+                burstapi({
+                    requestType: "getBlock",
+                    height: search
+                }).then(block => {
+                    this.push("searchResults", {
+                        url: "/block/" + block.block,
+                        text: "Block " + block.block + " (height: " + search + ")"
+                    })
+                    this.loading = false;
+                    })
+                return;
+            }
+
             // Check transaction
             burstapi({
                 requestType: "getTransaction",
@@ -88,7 +123,7 @@ Polymer({
                     });
                 }
                 else{
-                    return Promise.reject("Block not found")
+                    return Promise.reject("Block not found");
                 }
             }.bind(this)).then(function(response){
                 this.loading = false;
@@ -96,7 +131,10 @@ Polymer({
                 this.loading = false;
             }.bind(this));
         }
-        
+        // Could be an asset name, an account name, or an account in RS format
+        else {
+            this.loading = false;
+        }
         //this.loading = false;
     }
 });

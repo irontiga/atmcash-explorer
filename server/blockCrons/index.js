@@ -65,7 +65,14 @@ function index(){
 				fields: ['asset']
 			}
 		})
-	})
+        })
+        .then(response => {
+            return assetTradesDB.createIndex({
+                index: {
+                    fields: ["buyer", "seller"]
+                }
+            })
+        })    
     //*/
 	
 	// Assets

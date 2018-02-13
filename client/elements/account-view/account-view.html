@@ -83,9 +83,9 @@
 
 		<template is="dom-if" if="{{equal(id, account._id)}}" restamp>
             
-            <div id="account-bar">
+            <!-- <div id="account-bar">
                 <div class="right">
-                    <span style="margin:0;" class="balance white-primary" id="balance">{{_formatNQT(account.balanceNQT)}}<!-- + unconfirmed amounts --><span class="currency white-primary">ATM</span></span> 
+                    <span style="margin:0;" class="balance white-primary" id="balance">{{_formatNQT(account.balanceNQT)}}<span class="currency white-primary">ATM</span></span> 
                     <paper-tooltip for="balance">{{_formatNQT(account.balanceNQT)}}{{_NQTDecimals(account.balanceNQT)}} ATM</paper-tooltip>
                     <br>
                     <span class=" white-secondary">Mined: {{_formatNQT(account.forgedBalanceNQT)}} <small class="currency">ATM</small></span>
@@ -95,10 +95,11 @@
                 <span class="name white-secondary">{{account.name}}</span>
                 <br>
                 <span class="account-ids white-secondary">{{account.accountRS}} <b>/</b> {{account._id}}</span>
-            </div>
+            </div> -->
             
             <iron-grid class="gapped">
                 <div class="xs12 s12 m6">
+                    
                     <paper-card>
                         <div class="card-content">
                             <br>
@@ -206,7 +207,7 @@
 
                 <div class="xs12 s12 m12">
                     <paper-card>
-                        <account-trades id="{{id}}" route="{{route}}"></account-trades>
+                        <account-trades id="{{id}}" route="{{route}}" account="{{account}}"></account-trades>
                     </paper-card>
                 </div>
             </iron-grid>

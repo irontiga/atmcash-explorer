@@ -212,7 +212,7 @@
 
                     <div>
                         <template is="dom-if" if="{{equal(routeData.view, 'search')}}">
-                            <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
+                            <search-view search="{{routeData.id}}" dburl="{{dburl}}" block="{{block}}"></search-view>
                         </template>
                         <template is="dom-if" if="{{equal(routeData.view, 'asset')}}">
                             <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>

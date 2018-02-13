@@ -31,7 +31,10 @@ Polymer({
 		var date = a.getDate();
 		var hour = a.getHours();
 		var min = a.getMinutes();
-		//var sec = a.getSeconds();
+        if (min < 10) {
+            min = "0" + min;
+        }
+        //var sec = a.getSeconds();
 		// Will display time in 10:30:23 format
 		var time = year + ' ' + date + ' ' + month + ' ' + ' ' + hour + ':' + min;
 		return time;
