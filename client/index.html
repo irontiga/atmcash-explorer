@@ -221,33 +221,6 @@
                 live: true,
                 retry: true
             })
-            
-			/*var loaded = false;
-			
-			function finishLoad(){
-				if(loaded){
-					return;
-				}
-				var explorer = document.createElement("explorer-app");
-				document.body.append(explorer);
-				document.getElementById("load-db").className = "hidden";
-				loaded = true;
-			}
-			
-			var assets = new PouchDB('assets');
-			
-			var rep = PouchDB.replicate("http://192.111.150.247:5984/assets","assets", {
-				live: true,
-				retry: true
-			})*/
-            
-			/*assets.replicate.from("http://192.111.150.247:5984/assets", {
-				live: true,
-				retry: true
-			}, function(err){
-				console.log("----ERROR----")
-				console.log(err);
-			})*/
 			.on('change', function (info) {
 				// handle change
 				console.log(info);

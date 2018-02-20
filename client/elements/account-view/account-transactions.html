@@ -202,7 +202,8 @@
                         },
                         fields: ["_id", "timestamp", "sender", "senderRS", "recipient", "recipientRS", "block", "ecBlockHeight", "amountNQT", "type", "subtype", "feeNQT"],
                         skip: params.pageSize * (params.page),
-                        limit: params.pageSize
+                        limit: params.pageSize,
+                        sort: [{timestamp: "desc"}]
                     }
 
                     //console.log(options);

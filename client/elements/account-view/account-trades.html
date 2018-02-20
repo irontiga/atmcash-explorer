@@ -177,7 +177,7 @@
                 }.bind(this),60 * 1000);
 
                 const ID = this.id;
-                console.log(ID);
+                //console.log(ID);
 
                 this.accountTradesProvider = (params, callback) => {
                     var options = {
@@ -189,7 +189,8 @@
                         },
                         //fields:["_id", "timestamp", "seller", "buyer", "height", "asset", "name", "tradeType", "priceNQT", "decimals", "quantityQNT", "seller"],
                         skip: params.pageSize*(params.page),
-                        limit: params.pageSize
+                        limit: params.pageSize,
+                        sort: [{timestamp: "desc"}]
                     }
 
                     //console.log(options);
@@ -213,7 +214,7 @@
                             }
                             return trade;
                         });
-                        console.log(docs)
+                        //console.log(docs)
                         callback(docs);
                     })
                         .catch(err => {
