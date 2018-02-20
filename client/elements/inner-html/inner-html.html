@@ -1,11 +1,11 @@
 <dom-module id="inner-html">
-	<style is="custom-style" include="app-styles">
-        :root{
-            background:transparent;
-        }
-	</style>
-	
 	<template>
+        <style is="custom-style" include="app-styles">
+            :host > *{
+                background:transparent;
+            }
+        </style>
+        
 		<div id="inner-html-contents"></div>
 	</template>
 	

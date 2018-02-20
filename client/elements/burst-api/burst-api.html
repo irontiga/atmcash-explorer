@@ -12,33 +12,50 @@
 				   debounce-duration="300"></iron-ajax>
 	</template>
 	<script>
-		Polymer({
-			is: "burst-api",
-
-			properties: {
-				id: {
-					type: String,
-					value: ""
-				},
-				response: {
-					type: Object,
-					notify: true
-				},
-				params: {
-					type: Object
-				},
-                apiUrl: {
-                    type: String,
-                    value: API_URL
-                }
-			},
-			_handleResponse: function(response){
-				//console.log(response);
-			},
+        class BurstApi extends Polymer.Element{
+            static get is() { return "burst-api" }
             
+            constructor(){
+                super()
+            }
+            
+            connectedCallback(){
+                super.connectedCallback();
+            }
+            
+            static get properties(){
+                return {
+                    id: {
+                        type: String,
+                        value: ""
+                    },
+                    response: {
+                        type: Object,
+                        notify: true
+                    },
+                    params: {
+                        type: Object
+                    },
+                    apiUrl: {
+                        type: String,
+                        value: API_URL
+                    }
+                }
+            }
+            
+            _handleResponse(response){
+                //console.log(response);
+            }
+
             generateRequest(){
                 this.shadowRoot.querySelector("#burstApiRequest").generateRequest();
             }
-		});
+            
+            ready(){
+                super.ready();
+            }
+        }
+        
+        customElements.define(BurstApi.is, BurstApi);
 	</script>
 </dom-module>

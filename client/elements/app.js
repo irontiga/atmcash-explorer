@@ -51,6 +51,8 @@ class ExplorerApp extends Polymer.Element{
     connectedCallback() {
         super.connectedCallback();
         //console.log('my-element created!');
+        
+        
     }
     
     _search(e){
@@ -90,15 +92,17 @@ class ExplorerApp extends Polymer.Element{
                 path: "/about.html" 
             }
         }));*/
-        const blockRequest = this.shadowRoot.querySelector("#blockRequest");
+        
+        this.blockRequest = this.shadowRoot.querySelector("#block-request burst-api");
         // Check new block.....every 3 seconds?
-        setInterval(function(){
-            blockRequest.generateRequest();
-        }.bind(this), 3000);
+        setInterval(() => {
+            this.shadowRoot.querySelector("#block-request burst-api").generateRequest();
+        }, 3000);
+        
     }
 }
 
-customElements.define("explorer-app", ExplorerApp);
+customElements.define(ExplorerApp.is, ExplorerApp);
 /*
 var app = Polymer({
 	is: "explorer-app",

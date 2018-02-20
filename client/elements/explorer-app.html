@@ -123,14 +123,16 @@
 		<!--<asset-db></asset-db>-->
 		<app-location route="{{route}}" path="{{path}}"></app-location>
 		
-        <app-route route="{{route}}" pattern="/:view/:id" data="{{routeData}}" active="{{routeActive}}" tail="routeTail"></app-route>
+        <app-route route="{{route}}" pattern="/:view/:id" data="{{routeData}}" active="{{routeActive}}" tail="{{routeTail}}"></app-route>
         
         <!-- Current block height (for calculating tx confirmations) -->
-        <burst-api
-                   id="blockRequest"
-                   params="{{blockRequestParams}}"
-                   response="{{block}}"
-                   ></burst-api>
+        <div id="block-request">
+            <burst-api
+                       params="{{blockRequestParams}}"
+                       response="{{block}}"
+                       ></burst-api>
+        </div>
+        
         
         
         <app-header-layout fullbleed>
@@ -248,159 +250,3 @@
 	</template>
 	<script src="app.js"></script>
 </dom-module>
-
-
-
-
-<script>
-/*
-<!-- drawer-width="160px"-->
-		<paper-drawer-panel>
-			<!-- Drawer -->
-			<paper-header-panel fixed drawer>
-
-				<paper-toolbar>
-					<span class="title">EXPLORE</span>
-    </paper-toolbar>
-
-				<div class="layout vertical" style="height: 100%">
-
-					<paper-listbox>
-						<!--<paper-item>
-							<paper-ripple></paper-ripple>
-							<a style="display:block" href="/asset/">Assets</a>
-    </paper-item>
-
-						<paper-item>
-							<paper-ripple></paper-ripple>
-							<a style="display:block" href="/store/">Store</a>
-    </paper-item>-->
-
-                        <paper-item>
-                            <paper-ripple></paper-ripple>
-                            <a href="/richlist/1">Richlist</a>
-    </paper-item>
-    </paper-listbox>
-
-					<!--<div class="flex"></div>-->
-
-					<all-assets page-size=10 route="{{route}}">
-						<paper-icon-button icon="fullscreen" onclick="allAssets.open()"></paper-icon-button>
-    </all-assets>
-
-
-    </div>
-
-    </paper-header-panel>
-
-			<!-- Main page area -->
-			<paper-header-panel main>
-
-
-
-
-				<!-- All assets dialogue -->
-
-
-				<paper-dialog id="allAssets" with-backdrop>
-                    <paper-dialog-scrollable style="margin:0; padding:0;">
-                        <all-assets full="true" route="{{route}}"></all-assets>
-    </paper-dialog-scrollable>
-
-					<div class="buttons">
-						<paper-button dialog-confirm autofocus>
-							<paper-ripple></paper-ripple>
-							Close
-    </paper-button>
-    </div>
-    </paper-dialog>
-
-
-
-
-
-
-				<paper-toolbar>
-					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-					<span class="title"><!--Burst explorer--></span>
-					<!--<a href="/richlist/1">Richlist &nbsp;</a>-->
-                    <paper-input-container class="search-container">
-                        <paper-icon-button prefix icon="search" on-tap="_search"></paper-icon-button>
-                        <input is="iron-input" id="searchInput" on-keydown="_searchKeypress" placeholder="Search">
-    </paper-input-container>
-					<!--<paper-input class="main-search" label="Search" id="searchInput" on-keydown="_searchKeypress">
-						<paper-icon-button suffix icon="search" on-tap="_search"></paper-icon-button>
-						<input is="iron-input">
-    </paper-input>-->
-					<paper-icon-button icon="refresh"></paper-icon-button>
-    </paper-toolbar>
-
-				<div>
-                    <template is="dom-if" if="{{routeActive}}">
-                        <neon-lazy-pages selected="[[routeData.view]]" attr-for-selected="name" loading="{{lazyLoading}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
-                        <!--<iron-pages >-->
-                            <paper-progress indeterminate class="blue"  active="{{lazyLoading}}" style="width:100%;"></paper-progress>
-                            <template is="iron-lazy-page" name="search">
-                                <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
-    </template>
-                            <template is="iron-lazy-page" name="asset">
-                                <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
-    </template>
-                            <template is="iron-lazy-page" name="account">
-                                <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
-    </template>
-                            <template is="iron-lazy-page" name="transaction">
-                                <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
-    </template>
-                            <template is="iron-lazy-page" name="block">
-                                <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
-    </template>
-                            <template is="iron-lazy-page" name="store">
-                                <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
-    </template>
-                            <template is="iron-lazy-page" name="richlist">
-                                <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
-    </template>
-                        <!--</iron-pages>-->
-    </neon-lazy-pages>
-    </template>
-
-
-    </div>
-
-    </paper-header-panel>
-    </paper-drawer-panel>
-    
-    
-    <template is="dom-if" if="{{routeActive}}">
-                            <!--<paper-progress indeterminate class="blue" active="{{lazyLoading}}" style="width:100%;"></paper-progress>-->
-
-                            <iron-lazy-pages selected="{{routeData.view}}" attr-for-selected="view" loading="{{lazyLoading}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
-                                <!--<iron-pages >-->
-                                <template is="dom-if" view="search" restamp>
-                                    <search-view search="{{routeData.id}}" dburl="{{dburl}}"></search-view>
-    </template>
-                                <template is="dom-if" view="asset" restamp>
-                                    <asset-view id="{{routeData.id}}" tail="{{routeTail}}" dburl="{{dburl}}" route="{{route}}"></asset-view>
-    </template>
-                                <template is="dom-if" view="account">
-                                    <account-view id="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></account-view>
-    </template>
-                                <template is="dom-if" view="transaction" restamp>
-                                    <transaction-view id="{{routeData.id}}" dburl="{{dburl}}"></transaction-view>
-    </template>
-                                <template is="dom-if" view="block">
-                                    <block-view id="{{routeData.id}}" dburl="{{dburl}}"></block-view>
-    </template>
-                                <template is="dom-if" view="store">
-                                    <store-view id="{{routeData.id}}" dburl="{{dburl}}"></store-view>
-    </template>
-                                <template is="dom-if" view="richlist" restamp>
-                                    <richlist-view page="{{routeData.id}}" dburl="{{dburl}}" route="{{route}}"></richlist-view>
-    </template>
-                                <!--</iron-pages>-->
-    </iron-lazy-pages>
-    </template>
-    
-    */
-</script>

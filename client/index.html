@@ -5,11 +5,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         
-        <script>
-            //DB_URL = window.location.protocol + "//" + window.location.hostname + ":5984/";
-            DB_URL = "http://192.168.178.35:5984/";
-            API_URL = "http://192.168.178.35:8112/ATM";
-        </script>
         
         <script src="/client/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 		<link rel="import" href="/client/bower_components/polymer/polymer.html">
@@ -20,8 +15,11 @@
 -->
         <script src="/client/bower_components/pouchdb/dist/pouchdb.min.js"></script>
         <script src="/client/bower_components/pouchdb/dist/pouchdb.find.min.js"></script>
-		
+        
+
+        <script src="/client/config.js"></script>
         <link rel="import" href="/client/elements/explorer-app.html">
+        
 		<style>
 			/*#load-db{
 				position: absolute;
@@ -156,6 +154,9 @@
 			body{
 				margin:0;
 			}
+            #errorMessage{
+                z-index:-100000;
+            }
 		</style>
 	</head>
 	<body>
@@ -180,7 +181,6 @@
             <explorer-app></explorer-app>
         </div>
         
-        
 		<script>
             var loaded = false;
             var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
@@ -195,8 +195,14 @@
                 if(loaded){
                     return;
                 }
-                if(!isChrome){
-                    console.log("OOPPSSSS");
+                if(isChrome){
+                    var explorer = document.createElement("explorer-app");
+                    document.body.append(explorer);
+                    document.getElementById("load-db").outerHTML="";
+                    //console.log(explorer);
+                }
+                else{
+                    console.log("Use Chrome bro...");
                     if(!readCookie("firstLoad")){
                         createCookie("firstLoad", "true", 14);
                         window.location.reload();
@@ -205,12 +211,6 @@
                         document.getElementById("load-db").className = "hidden";
                         document.getElementById("initial-app").className = "";
                     }
-                }
-                else{
-                    var explorer = document.createElement("explorer-app");
-                    document.body.append(explorer);
-                    document.getElementById("load-db").outerHTML="";
-                    //console.log(explorer);
                 }
                 loaded = true;
             }

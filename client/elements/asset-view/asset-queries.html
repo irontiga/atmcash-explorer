@@ -1,5 +1,5 @@
 <dom-module id="asset-queries">
-	<template>		
+	<template>
 		<!-- Trades -->
 		<!--<app-pouchdb-query db-name="http://127.0.0.1:5984/asset-trades"
 						   selector="{{_getTradesSelector(id)}}"
@@ -8,7 +8,7 @@
 						   limit="20"
 						   data="{{trades}}">
 		</app-pouchdb-query>-->
-		
+
 		<!-- Ask orders -->
 		<!--<app-pouchdb-query db-name="http://127.0.0.1:5984/asset-ask-orders"
 						   selector="{{_getAskOrdersSelector(id)}}"
@@ -17,7 +17,7 @@
 						   limit="20" 
 						   data="{{askorders}}">
 </app-pouchdb-query>-->
-		
+
 		<!-- Bid orders -->
 		<!--<app-pouchdb-query db-name="http://127.0.0.1:5984/asset-bid-orders"
 						   selector="{{_getBidOrdersSelector(id)}}"
@@ -26,36 +26,25 @@
 						   limit="20"  
 						   data="{{bidorders}}">
 </app-pouchdb-query>-->
-		
+
 		<!-- Wait for page to be ready otherwise the url isn't created right -->
 		<template is="dom-if" if="{{pageready}}">
 			<!-- Selected Asset -->
-			<app-pouchdb-document
-								  db-name="assets"
-								  doc-id="{{id}}"
-								  data="{{asset}}"
-								  log="true"
-								  sequentialTransactions="true">
+			<app-pouchdb-document db-name="assets" doc-id="{{id}}" data="{{asset}}" log="true" sequentialTransactions="true">
 			</app-pouchdb-document>
-			
+
 			<!-- All assets -->
-			<app-pouchdb-query id="allAssetsQuery"
-							   db-name="assets"
-							   selector='{{allAssetsSelector}}'
-							   limit="300"
-							   fields='["monthlyVolume", "dailyVolume", "name", "_id"]',
-							   sort='[{"monthlyVolume": "desc"}]'
-							   data="{{allassets}}"
-							   log="true">
+			<app-pouchdb-query id="allAssetsQuery" db-name="assets" selector='{{allAssetsSelector}}' limit="300" fields='["monthlyVolume", "dailyVolume", "name", "_id"]'
+			 , sort='[{"monthlyVolume": "desc"}]' data="{{allassets}}" log="true">
 			</app-pouchdb-query>
 		</template>
 
 	</template>
-	
+
 	<script>
 		Polymer({
 			is: "asset-queries",
-			
+
 			properties: {
 				id: String,
 				newdburl: {
@@ -75,11 +64,11 @@
 					type: Array,
 					notify: true
 				},
-				allAssetsSelector:{
+				allAssetsSelector: {
 					type: String,
-					value:  "_id $gt null, monthlyVolume $gt null"
+					value: "_id $gt null, monthlyVolume $gt null"
 				},
-				asset:{
+				asset: {
 					type: Object,
 					notify: true
 				},
@@ -97,26 +86,26 @@
 				}
 			},
 
-			_getTradesSelector: function(id){
+			_getTradesSelector: function (id) {
 				//console.log("asset $eq '" + id + "', timestamp $exists true");
 				return "asset $eq '" + id + "', timestamp $gt null";
 			},
-			_getAskOrdersSelector: function(id){
+			_getAskOrdersSelector: function (id) {
 				return "asset $eq '" + id + "', priceNQT $gt null";
 			},
-			_getBidOrdersSelector: function(id){
+			_getBidOrdersSelector: function (id) {
 				return "asset $eq '" + id + "', priceNQT $gt null";
 			},
-			
-			_getdburl: function(url){
+
+			_getdburl: function (url) {
 				return url + "assets";
 			},
-			ready: function(){
+			ready: function () {
 				this.pageready = true;
 				// Refresh the all assets list every now n then
 				//console.log("Updating all assets list");
-				setInterval(function(){
-					this.shadorwRoot.querySelector("#allAssetsQuery").refresh();
+				setInterval(function () {
+					this.shadowRoot.querySelector("#allAssetsQuery").refresh();
 				}.bind(this), 200000);
 			}
 		});
