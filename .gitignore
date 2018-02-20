@@ -39,6 +39,7 @@ jspm_packages
 
 # Mine
 server/config.js
+client/config.js
 .brackets.json
 bower_components/
 node_modules/
