@@ -2,6 +2,7 @@
 
 const Hapi = require("hapi");
 const Inert = require("inert");
+const config = require("./config.js");
 
 let devMode = false;
 
@@ -16,7 +17,10 @@ process.argv.forEach((val, index, array) => {
 
 const server = new Hapi.Server();
 
-server.connection({ port: 80 });
+server.connection({ 
+    port: config.server.port,
+    host: config.server.host
+});
 
 server.register(Inert, () => {});
 

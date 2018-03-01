@@ -11,6 +11,10 @@ module.exports = {
 			"username": "",
 			"password": ""
 		}*/
-	}
+    },
+    "server": {
+        port: 80,
+        host: "127.0.0.1"
+    }
 };
 //Copy to new file called config.js, and perhaps update the db username/password
